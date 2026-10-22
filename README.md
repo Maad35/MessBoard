@@ -57,11 +57,11 @@ Option B, then install the ZXP again.
    want the whole repository as one file).
 2. Copy the `MessBoard-1.0.0` folder into the CEP extensions
    folder (create it if it does not exist):
-   - Windows: `%APPDATA%\\Adobe\\CEP\\extensions\\`
+   - Windows: `%APPDATA%\Adobe\CEP\extensions\`
    - macOS: `~/Library/Application Support/Adobe/CEP/extensions/`
 3. The folder install is unsigned, so enable unsigned extensions
    once (standard step for folder-installed CEP panels):
-   - Windows: in `HKEY_CURRENT_USER\\Software\\Adobe\\CSXS.10`, add a
+   - Windows: in `HKEY_CURRENT_USER\Software\Adobe\CSXS.10`, add a
      string value named `PlayerDebugMode` set to `1`. Newer After
      Effects versions may also read `CSXS.11` or `CSXS.12`; add the
      same value there if the panel does not appear.
