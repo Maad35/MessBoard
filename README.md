@@ -32,13 +32,31 @@ Made by **Maad**. Open source · Not for sale.
 
 ## Installation
 
+There are two ways to install MessBoard.
+
+**Option A: ZXP package (easiest)**
+
+1. Download `MessBoard-1.0.0.zxp` from this repository.
+2. Install it with a free ZXP installer tool, for example
+   [Anastasiy's Extension Manager](https://install.anastasiy.com/)
+   or the ZXP Installer from aescripts + aeplugins. Select the
+   downloaded file in the installer and let it finish.
+3. Restart After Effects and open **Window > Extensions > MessBoard**.
+
+The ZXP is signed with a self-signed certificate. The installer
+tools above handle that automatically. If the panel does not appear
+afterwards, enable unsigned extensions once as described in
+Option B, then install the ZXP again.
+
+**Option B: manual folder**
+
 1. Download the release and unzip it. You get a `MessBoard-1.0.0`
    folder; the extension itself is the inner folder of the same name.
 2. Copy the inner `MessBoard-1.0.0` folder into the CEP extensions
    folder (create it if it does not exist):
    - Windows: `%APPDATA%\Adobe\CEP\extensions\`
    - macOS: `~/Library/Application Support/Adobe/CEP/extensions/`
-3. MessBoard is distributed unsigned, so enable unsigned extensions
+3. The folder install is unsigned, so enable unsigned extensions
    once (standard step for folder-installed CEP panels):
    - Windows: in `HKEY_CURRENT_USER\Software\Adobe\CSXS.10`, add a
      string value named `PlayerDebugMode` set to `1`. Newer After
