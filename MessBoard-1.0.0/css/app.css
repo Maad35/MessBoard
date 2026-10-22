@@ -200,6 +200,9 @@ body.sampling-color, body.sampling-color * { cursor: url("../assets/cursors/eyed
  * the pointer outruns the item: the drag is the state, not the hover. */
 #viewport.drag-moving, #viewport.drag-moving * { cursor: move !important; }
 #viewport.action-drag, #viewport.action-drag * { cursor: var(--action-cursor, move) !important; }
+/* While any board gesture is live, a playing YouTube iframe stops eating
+ * pointer events mid-drag: the gesture is the state, the video waits. */
+#viewport.gesture-active iframe.link-player { pointer-events: none; }
 .sel-match-hl { background: rgba(91,156,246,.35); border-radius: 2px; }
 .note-content[contenteditable="true"] .note-link { color: inherit; text-decoration: none; cursor: text; }
 .reference.drawing { background: transparent; box-shadow: none; }

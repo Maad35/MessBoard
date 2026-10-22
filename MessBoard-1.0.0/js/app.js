@@ -505,7 +505,7 @@ function activateBoard(nextBoard,file,target,state,commit){
  }finally{activatingBoard=false;}
 }
 function settleWindowEdits(){
- space=false;pan=null;viewport.classList.remove('panning');viewport.classList.remove('drag-moving');viewport.classList.remove('action-drag');if(viewport.style&&viewport.style.removeProperty)viewport.style.removeProperty('--action-cursor');cancelDrawGesture();
+ space=false;pan=null;viewport.classList.remove('panning');viewport.classList.remove('drag-moving');viewport.classList.remove('action-drag');viewport.classList.remove('gesture-active');if(viewport.style&&viewport.style.removeProperty)viewport.style.removeProperty('--action-cursor');cancelDrawGesture();
  if(action){if(action.type!=='marquee')board.commitTransaction();action=null;marquee.hidden=true;document.getElementById('rotationReadout').hidden=true;}
  stopErasing();
 }
@@ -885,6 +885,7 @@ window.addEventListener('mousemove',dragMoveHandler);
 var RESIZE_CURSORS={n:'ns-resize',s:'ns-resize',e:'ew-resize',w:'ew-resize',nw:'nwse-resize',se:'nwse-resize',ne:'nesw-resize',sw:'nesw-resize'};
 function syncDragCursor(){
  viewport.classList.toggle('drag-moving',!!(action&&action.type==='move'));
+ viewport.classList.toggle('gesture-active',!!(action||pan));
  var pin='';
  if(action&&action.type==='resize')pin=RESIZE_CURSORS[action.dir]||'';
  else if(action&&board&&action.type==='rotate'){var selT=board.selectedItems();pin=rotateCursorFor(action.zone||0,selT.length===1?(Number(selT[0].rotation)||0):0);}
@@ -915,7 +916,7 @@ function dragMoveHandler(e){syncDragCursor();
 window.addEventListener('mouseup',function(e){if(!action&&!pan)return;stopEdgePan();document.getElementById('rotationReadout').hidden=true;if(action&&action.type==='draw'){var p=boardPoint(e.clientX,e.clientY),last=action.points[action.points.length-1];if(!last||last[0]!==p.x||last[1]!==p.y)action.points.push([p.x,p.y]);finishDrawing(action,e.shiftKey,e.altKey);clearDrawPreview();action=null;return;}if(action&&action.type==='section'){var endP=sectionDragPoint(action.start,boardPoint(e.clientX,e.clientY),e.shiftKey);if(e.altKey)endP=altSnapPoint(endP,board);var srect=rectFromPoints(action.start,endP);marquee.hidden=true;marquee.classList.remove('section-preview');action=null;
   if(srect.maxX-srect.minX<40||srect.maxY-srect.minY<40){var scx=(srect.minX+srect.maxX)/2,scy=(srect.minY+srect.maxY)/2;srect={minX:scx-480,minY:scy-270,maxX:scx+480,maxY:scy+270};}
   var createdSection=board.addSection(srect.minX,srect.minY,srect.maxX-srect.minX,srect.maxY-srect.minY,uniqueSectionName(),lastSectionStyle);clearSectionMode();render();editSectionName(board.getItem(createdSection.id));return;}
- if(action&&action.type!=='marquee')board.commitTransaction();if(action&&action.type==='marquee')marquee.hidden=true;if(pan)lastCanvasPoint=boardPoint(e.clientX,e.clientY);pan=null;action=null;viewport.classList.remove('panning');viewport.classList.remove('drag-moving');viewport.classList.remove('action-drag');if(viewport.style&&viewport.style.removeProperty)viewport.style.removeProperty('--action-cursor');render();});
+ if(action&&action.type!=='marquee')board.commitTransaction();if(action&&action.type==='marquee')marquee.hidden=true;if(pan)lastCanvasPoint=boardPoint(e.clientX,e.clientY);pan=null;action=null;viewport.classList.remove('panning');viewport.classList.remove('drag-moving');viewport.classList.remove('action-drag');viewport.classList.remove('gesture-active');if(viewport.style&&viewport.style.removeProperty)viewport.style.removeProperty('--action-cursor');render();});
 function handlePropertiesShortcut(e){
  if((e.key||'').toLowerCase()!=='e'||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey)return false;
  if(BoardUI.isEditing(e.target)||(e.target.closest&&e.target.closest('button,summary,a,[role="button"],.tool-panel,.command-menu,.context-menu')))return false;
