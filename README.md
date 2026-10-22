@@ -9,6 +9,8 @@ however you like, and send what you need straight into the active comp.
 
 Made by **Maad**. Open source · Not for sale.
 
+Current version: **1.0.0**
+
 ## Features
 
 - Infinite canvas with pan, zoom, grid, and board sections that frame
@@ -50,15 +52,16 @@ Option B, then install the ZXP again.
 
 **Option B: manual folder**
 
-1. Download the release and unzip it. You get a `MessBoard-1.0.0`
-   folder; the extension itself is the inner folder of the same name.
-2. Copy the inner `MessBoard-1.0.0` folder into the CEP extensions
+1. Take the `MessBoard-1.0.0` folder from this repository (use the
+   green **Code** button above and choose **Download ZIP** if you
+   want the whole repository as one file).
+2. Copy the `MessBoard-1.0.0` folder into the CEP extensions
    folder (create it if it does not exist):
-   - Windows: `%APPDATA%\Adobe\CEP\extensions\`
+   - Windows: `%APPDATA%\\Adobe\\CEP\\extensions\\`
    - macOS: `~/Library/Application Support/Adobe/CEP/extensions/`
 3. The folder install is unsigned, so enable unsigned extensions
    once (standard step for folder-installed CEP panels):
-   - Windows: in `HKEY_CURRENT_USER\Software\Adobe\CSXS.10`, add a
+   - Windows: in `HKEY_CURRENT_USER\\Software\\Adobe\\CSXS.10`, add a
      string value named `PlayerDebugMode` set to `1`. Newer After
      Effects versions may also read `CSXS.11` or `CSXS.12`; add the
      same value there if the panel does not appear.
@@ -68,19 +71,16 @@ Option B, then install the ZXP again.
 
 ## Documentation
 
-The full guide ships in the release next to the extension folder as
-`MessBoard-Guide.html`. Keyboard shortcuts are also listed inside the
-app under **MessBoard > Keyboard shortcuts**.
+The full guide is included in this repository as
+`MessBoard-Guide.html`; open it in any web browser. Keyboard
+shortcuts are also listed inside the app under
+**MessBoard > Keyboard shortcuts**.
 
-## Development
+## Questions and bug reports
 
-- `cep/` is the extension source (panel in vanilla JS with no bundler,
-  `jsx/host.jsx` is the ExtendScript host and must stay ES3-safe)
-- `tests/` holds the test suite: `node --test tests/*.test.js`
-- `npm run check` verifies the build contract (required files present,
-  all JavaScript parses)
-- `HANDOFF.md` documents the architecture, the hard constraints, and
-  the behavior decisions that must not change silently
+Open an issue in this repository. Please include your After Effects
+version, your operating system, and what you were doing when the
+problem happened.
 
 ## License
 
