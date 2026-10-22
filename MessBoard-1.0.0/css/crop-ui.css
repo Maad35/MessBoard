@@ -1,0 +1,53 @@
+/* Native crop handles; no cursor assets or hover submenus. */
+.crop-overlay {
+  position: absolute;
+  z-index: 8001;
+  transform-origin: center;
+  pointer-events: auto;
+  user-select: none;
+  touch-action: none;
+  cursor: default;
+}
+.crop-source { position: absolute; left: 0; top: 0; width: 100%; height: 100%; max-width: none; object-fit: fill; pointer-events: none; }
+.crop-shade { position: absolute; background: rgba(23, 23, 23, .72); pointer-events: none; }
+.crop-box { position: absolute; border: 1px solid var(--accent-indicator); cursor: move; outline: none; }
+.crop-box:focus { outline: none; }
+.crop-handle { position: absolute; width: 16px; height: 16px; transform: translate(-50%, -50%); z-index: 1; touch-action: none; }
+.crop-handle:after { content: ""; position: absolute; left: 25%; top: 25%; width: 50%; height: 50%; background: var(--accent-indicator); border: 1px solid var(--deep); }
+.crop-handle-nw { left: 0; top: 0; cursor: nwse-resize; }
+.crop-handle-n { left: 50%; top: 0; cursor: ns-resize; }
+.crop-handle-ne { left: 100%; top: 0; cursor: nesw-resize; }
+.crop-handle-e { left: 100%; top: 50%; cursor: ew-resize; }
+.crop-handle-se { left: 100%; top: 100%; cursor: nwse-resize; }
+.crop-handle-s { left: 50%; top: 100%; cursor: ns-resize; }
+.crop-handle-sw { left: 0; top: 100%; cursor: nesw-resize; }
+.crop-handle-w { left: 0; top: 50%; cursor: ew-resize; }
+.crop-bar {
+  position: absolute;
+  z-index: 8100;
+  display: flex;
+  align-items: center;
+  max-width: calc(100% - 16px);
+  padding: 5px;
+  border: 1px solid #515158;
+  border-radius: var(--radius);
+  background: var(--rail);
+  box-shadow: var(--panel-shadow);
+  cursor: default;
+}
+.crop-bar > :not([hidden]) ~ :not([hidden]) { margin-left: 6px; }
+.crop-label { padding: 0 6px; color: var(--muted); }
+.crop-bar button { min-height: 30px; white-space: nowrap; }
+.crop-bar button:focus-visible { outline: 2px solid var(--accent-indicator); outline-offset: 1px; }
+.crop-bar .crop-done { border-color: var(--accent-indicator); color: var(--accent-text); background: var(--accent-surface); }
+#world.crop-editing ~ #selectionBox { display: none !important; }
+#world.crop-editing ~ .selection-member-frame { display: none !important; }
+#world.crop-editing .reference > .handle,
+#world.crop-editing .reference > .rotate,
+#world.crop-editing .reference.selected:after { display: none !important; }
+@media (max-width: 340px) {
+  .crop-label { display: none; }
+  .crop-bar > :not([hidden]) ~ :not([hidden]) { margin-left: 4px; }
+  .crop-bar > button:first-of-type:not([hidden]) { margin-left: 0; }
+  .crop-bar button { padding: 6px 8px; }
+}

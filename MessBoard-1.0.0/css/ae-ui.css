@@ -1,0 +1,19 @@
+/* After Effects operations use the same inspector rhythm. */
+.ae-panel section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.ae-panel section:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
+.ae-panel .panel-help { margin: 6px 0 10px; overflow-wrap: break-word; word-wrap: break-word; }
+.ae-panel select { min-width: 0; max-width: 62%; }
+.ae-panel input[type="number"] { width: 64px; max-width: 40%; font-variant-numeric: tabular-nums; }
+.ae-panel .ae-actions { display: flex; }
+.ae-panel .ae-actions > :not([hidden]) ~ :not([hidden]) { margin-left: 6px; }
+.ae-panel .ae-actions button { flex: 1; min-width: 0; }
+.ae-panel button { white-space: normal; }
+#aeContext { white-space: pre-wrap; max-height: 140px; overflow-y: auto; font-variant-numeric: tabular-nums; }
+#aeContext, #aeProjectLink, #aeStatus { user-select: text; }
+#aeStatus { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); min-height: 32px; }
+#aeStatus:empty { display: none; }
+.ae-panel[aria-busy="true"] #aeStatus { color: var(--ink); }

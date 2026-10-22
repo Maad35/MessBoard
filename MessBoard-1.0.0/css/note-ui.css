@@ -1,0 +1,16 @@
+/* Note inspector shares the existing shell, with searchable font choices. */
+.note-panel #noteFontSearch { width: 100%; max-width: 100%; margin: 0; }
+.note-panel label[for="noteFontSearch"] { margin-bottom: 6px; }
+.note-font-list { max-height: 154px; overflow-y: auto; margin-top: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 3px; background: var(--deep); }
+.note-font-list button { display: block; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; margin: 0; border-color: transparent; background: transparent; }
+.note-font-list button:hover, .note-font-list button:focus { background: var(--accent-surface); color: var(--ink); }
+.note-panel #noteFontStatus:empty { display: none; }
+.note-panel #noteFontStatus { font-size: 11px; }
+/* Style toggles: compact icon buttons (B/I/U) with a pressed accent state.
+   CEP's older Chromium has no flex gap: spacing via margins. */
+.style-toggles { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; max-width: 136px; }
+.style-toggles button { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 28px; min-height: 28px; padding: 0; }
+.style-toggles button + button { margin-left: 4px; margin-bottom: 4px; }
+.style-toggles button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.style-toggles button[aria-pressed="true"] { background: var(--accent-surface); border-color: var(--accent-indicator); color: var(--accent-text); }
+.style-toggles button[aria-pressed="true"] svg { stroke: var(--accent-indicator); }

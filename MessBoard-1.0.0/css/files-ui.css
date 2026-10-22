@@ -1,0 +1,20 @@
+/* File operations inherit the common inspector shell. */
+.files-panel section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.files-panel section:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
+.files-panel .panel-help { margin: 6px 0 10px; }
+.files-panel .file-actions { display: flex; }
+.files-panel .file-actions > :not([hidden]) ~ :not([hidden]) { margin-left: 6px; }
+.files-panel .file-actions button { flex: 1; min-width: 0; }
+.files-panel select { min-width: 0; max-width: 60%; }
+#missingList { max-height: 180px; margin-top: 8px; overflow: auto; }
+.missing-row { display: flex; align-items: center; border-bottom: 1px solid var(--line); padding: 6px 0; }
+.missing-row > :not([hidden]) ~ :not([hidden]) { margin-left: 8px; }
+.missing-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--danger); }
+.missing-row button { width: auto; flex-shrink: 0; margin: 0; }
+#filesStatus { margin-top: 16px; padding: 12px 0 0; border-top: 1px solid var(--line); overflow-wrap: break-word; user-select: text; }
+#filesStatus:empty { display: none; }
+.files-panel[aria-busy="true"] #filesStatus { color: var(--ink); }

@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Panduan MessBoard 1.0.0</title>
+<style>
+:root{
+  --bg:#000; --surface:#0a0a0a; --elev:#171717; --elev2:#242424;
+  --text:#fff; --secondary:#a3a3a3; --muted:#666;
+  --border:#262626; --border-subtle:#1a1a1a; --border-strong:#383838;
+  --sans:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--text)}
+section a{color:#5b9cf6}
+code{font-family:var(--mono);font-size:.86em;background:var(--elev);border:1px solid var(--border-subtle);border-radius:4px;padding:1px 5px}
+kbd{font-family:var(--mono);font-size:.82em;background:var(--elev);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:1px 5px;white-space:nowrap}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:264px;flex:none;position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 20px;border-right:1px solid var(--border-subtle);background:var(--bg)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.brand-mark{width:34px;height:34px;flex:none;fill:none;stroke:#5b9cf6;stroke-width:1.4;stroke-linejoin:round}
+.brand strong{display:block;font-size:16px;letter-spacing:-.01em}
+.brand small{display:block;color:var(--muted);font-size:11px;font-family:var(--mono)}
+.search{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font:inherit;font-size:13px;margin-bottom:20px;outline:none}
+.search:focus{border-color:var(--border-strong)}
+.sidebar nav{display:flex;flex-direction:column;gap:2px}
+.nav-group{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
+.nav-group:first-child{margin-top:0}
+.sidebar nav a{color:var(--secondary);text-decoration:none;font-size:13.5px;padding:5px 8px;border-radius:6px}
+.sidebar nav a:hover{color:var(--text);background:var(--surface)}
+.sidebar nav a.active{color:#5b9cf6;background:rgba(91,156,246,.12)}
+.side-note{margin-top:28px;padding-top:18px;border-top:1px solid var(--border-subtle);color:var(--muted);font-size:12.5px;font-style:italic}
+.main{flex:1;min-width:0}
+.content{max-width:780px;margin:0 auto;padding:0 40px 80px}
+.hero{padding:64px 0 0}
+.kicker{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#5b9cf6;border:1px solid rgba(91,156,246,.35);border-radius:999px;padding:4px 12px;margin-bottom:24px}
+.hero h1{font-size:clamp(38px,5.4vw,58px);line-height:1.05;letter-spacing:-.03em;margin:0 0 18px;font-weight:600}
+.hero p{color:var(--secondary);font-size:17px;line-height:1.6;max-width:600px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;border-top:1px solid var(--border-subtle)}
+.stat{padding:16px 16px 0 0}
+.stat b{display:block;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.stat span{color:var(--muted);font-size:12px;font-family:var(--mono)}
+.empty-result{display:none;border:1px solid var(--border);border-radius:8px;padding:14px 16px;color:var(--secondary);margin-top:32px}
+.empty-result.show{display:block}
+.content.filtered .hero{display:none}
+.content.filtered section{display:none}
+.content.filtered section.match{display:block}
+section{padding-top:56px}
+section h2{font-size:26px;letter-spacing:-.02em;margin:0 0 14px;font-weight:600}
+section h3{font-size:16px;margin:26px 0 8px;font-weight:600}
+section p{color:var(--secondary)}
+section b,section strong{color:var(--text)}
+.lede{font-size:16.5px;color:var(--secondary)}
+ul{padding-left:20px;color:var(--secondary)}
+li{margin:5px 0}
+.steps{display:flex;flex-direction:column;gap:0;margin:22px 0;border:1px solid var(--border-subtle);border-radius:12px;overflow:hidden;counter-reset:step}
+.step{padding:18px 20px;background:var(--surface);counter-increment:step}
+.step+.step{border-top:1px solid var(--border-subtle)}
+.step>b{display:block;font-size:15px;margin-bottom:2px}
+.step>b::before{content:counter(step,decimal-leading-zero);display:block;font-family:var(--mono);font-size:11px;color:#5b9cf6;letter-spacing:.1em;margin-bottom:8px}
+.step span{color:var(--secondary);font-size:14px}
+.callout{border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:20px 0;color:var(--secondary);background:var(--surface);font-size:14.5px}
+.callout strong{color:var(--text)}
+.callout.good{border-color:rgba(74,222,128,.35)}
+.callout.good strong{color:#4ade80}
+.callout.warn{border-color:rgba(245,197,66,.35)}
+.callout.warn strong{color:#f5c542}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.compare>div{border:1px solid var(--border-subtle);border-radius:12px;padding:16px 18px;background:var(--surface)}
+.feature{border:1px solid var(--border-subtle);border-radius:12px;padding:18px 20px;margin:14px 0;background:var(--surface)}
+.feature h3{margin-top:0}
+.muted{color:var(--muted)}
+.table-wrap{overflow-x:auto;border:1px solid var(--border-subtle);border-radius:12px;margin:18px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border-subtle)}
+td{padding:9px 14px;border-bottom:1px solid var(--border-subtle);color:var(--secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{color:var(--text);white-space:nowrap}
+.changelog-entry{border:1px solid var(--border-subtle);border-radius:12px;padding:20px 22px;background:var(--surface)}
+.ver{font-family:var(--mono);font-size:12px;border:1px solid rgba(91,156,246,.35);border-radius:999px;padding:3px 10px;color:#5b9cf6}
+.changelog-entry ul{margin-top:14px}
+.footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border-subtle);color:var(--muted);font-size:13px}
+@media (max-width:900px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:static;border-right:none;border-bottom:1px solid var(--border-subtle)}
+  .sidebar nav{flex-direction:row;flex-wrap:wrap}
+  .content{padding:0 20px 60px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:14px}
+  .compare{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="brand"><svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 27V7h23M12 13h23v22H12Z"/><path d="m18 27 5-6 6 6"/></svg><div><strong>MessBoard</strong><small>Panduan Pengguna · v1.0.0</small></div></div>
+  <input id="search" class="search" type="search" placeholder="Cari fitur…" aria-label="Cari panduan">
+  <nav aria-label="Daftar isi">
+    <div class="nav-group">Mulai</div>
+    <a href="#mulai">Mulai dalam 5 menit</a>
+    <a href="#canvas">Kanvas &amp; navigasi</a>
+    <div class="nav-group">Konten</div>
+    <a href="#tambah">Menambah referensi</a>
+    <a href="#youtube">Video &amp; YouTube</a>
+    <a href="#notes">Catatan teks</a>
+    <a href="#drawing">Drawing &amp; shape</a>
+    <div class="nav-group">Susun</div>
+    <a href="#transform">Seleksi &amp; transform</a>
+    <a href="#organize">Arrange &amp; group</a>
+    <a href="#properties">Properties</a>
+    <div class="nav-group">Tampilan</div>
+    <a href="#appearance">Tampilan board</a>
+    <a href="#toolbar">Toolbar</a>
+    <div class="nav-group">After Effects</div>
+    <a href="#ae">Workflow AE</a>
+    <a href="#files">File &amp; export</a>
+    <a href="#save">Save &amp; recovery</a>
+    <div class="nav-group">Referensi</div>
+    <a href="#shortcut">Shortcut</a>
+    <a href="#opensource">Open source</a>
+    <a href="#changelog">Changelog</a>
+    <a href="#troubleshoot">Troubleshooting</a>
+  </nav>
+  <div class="side-note">"Your beautifully messy visual workspace"<br><br>Made by Maad</div>
+</aside>
+<main class="main"><article class="content">
+<header class="hero">
+  <span class="kicker">MessBoard · After Effects Extension</span>
+  <h1>Your beautifully messy visual workspace.</h1>
+  <p>Panduan lengkap: mengumpulkan referensi, menyusun board, bekerja dengan video, dan menghubungkan semuanya ke After Effects — dari nol sampai mahir.</p>
+  <div class="stats">
+    <div class="stat"><b>v1.0.0</b><span>Version</span></div>
+    <div class="stat"><b>Open source</b><span>License</span></div>
+    <div class="stat"><b>Not for sale</b><span>Free to use</span></div>
+    <div class="stat"><b>Windows</b><span>After Effects CEP</span></div>
+  </div>
+</header>
+<div id="emptyResult" class="empty-result">Tidak ditemukan. Coba kata seperti "YouTube", "crop", "Arrange", atau "recovery".</div>
+
+<section id="mulai">
+  <h2>Mulai dalam 5 menit</h2>
+  <p class="lede">MessBoard memakai alur board-first: tentukan file board dulu, masukkan referensi, lalu susun semuanya langsung di kanvas.</p>
+
+  <p><b>Recent boards:</b> 3 board terakhir muncul di layar awal dan di menu <b>Board → Open recent…</b> — klik untuk langsung membuka tanpa mencari folder.</p>
+  <div class="steps">
+    <div class="step"><b>Buka MessBoard</b><span>Di After Effects: <b>Window → Extensions → MessBoard</b>.</span></div>
+    <div class="step"><b>Buat board baru</b><span>Pilih <b>New board…</b>, tentukan nama dan lokasi file <code>.messboard</code>.</span></div>
+    <div class="step"><b>Masukkan materi</b><span>Klik <b>Add</b>, drag gambar dari file manager, atau paste gambar, teks, dan URL dengan <kbd>Ctrl</kbd> + <kbd>V</kbd>.</span></div>
+    <div class="step"><b>Susun board</b><span>Drag objek, resize, rotate, group, dan pakai Arrange (<kbd>A</kbd>). Scroll untuk zoom, <kbd>Space</kbd> + drag untuk pan.</span></div>
+    <div class="step"><b>Simpan</b><span><kbd>Ctrl</kbd> + <kbd>S</kbd> untuk save, <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> untuk Save As.</span></div>
+  </div>
+  <div class="callout"><strong></strong> Gambar lokal tetap terhubung ke file sumbernya. MessBoard tidak mengompresi atau mengubah file aslimu.</div>
+</section>
+
+<section id="canvas">
+  <h2>Kanvas &amp; navigasi</h2>
+  <div class="feature"><h3>Pan</h3><div><p>Tahan <kbd>Space</kbd> sambil drag, atau pakai tombol tengah mouse.</p></div></div>
+  <div class="feature"><h3>Zoom</h3><div><p>Scroll di kanvas. Zoom mengikuti posisi pointer — area yang sedang kamu lihat tetap jadi titik acuan.</p></div></div>
+  <div class="feature"><h3>Focus &amp; Fit</h3><div><p><kbd>F</kbd> untuk fokus ke seleksi. <kbd>Shift</kbd> + <kbd>F</kbd> untuk tampilkan seluruh board.</p></div></div>
+  <div class="feature"><h3>Grid</h3><div><p>Pilih dots, lines, atau none di <b>Canvas settings</b>. Atur ukuran, warna, dan opacity. Grid mengikuti kanvas saat kamera bergerak.</p></div></div>
+  <div class="callout good"><strong>Status save tetap tenang.</strong> Hanya perubahan objek atau pengaturan yang menandai "Unsaved". Sekadar pan/zoom tidak mengubah status.</div>
+</section>
+
+<section id="tambah">
+  <h2>Menambah referensi</h2>
+  <h3>Gambar lokal</h3>
+  <ul>
+    <li>Klik <b>Add</b> untuk pilih beberapa gambar sekaligus.</li>
+    <li>Drag-and-drop gambar langsung ke kanvas.</li>
+    <li>Paste screenshot atau gambar dari clipboard (<kbd>Ctrl</kbd> + <kbd>V</kbd>).</li>
+    <li><b>Auto-arrange:</b> menambah 2+ file sekaligus (via Add atau drag-and-drop) otomatis tersusun rapi dalam grid.</li>
+  </ul>
+  <h3>Extract colors</h3>
+  <p>Klik kanan gambar → <b>Extract colors…</b> untuk mengekstrak palet 8 warna dominan dari gambar. Klik warna mana saja untuk menyalin kode hex-nya. Tombol <b>Place on board</b> menaruh palet sebagai gambar di board — berguna sebagai referensi warna dan bisa di-Send ke AE.</p>
+  <h3>Gambar dari web</h3>
+  <p>Paste URL gambar langsung — MessBoard akan mengunduhnya. Paste URL YouTube untuk membuat kartu video, URL web biasa jadi catatan teks.</p>
+  <div class="callout"><strong>Thumbnail otomatis.</strong> Untuk board berisi banyak gambar besar, MessBoard membuat thumbnail ringan agar pan/zoom tetap mulus. Thumbnail dibuat otomatis dan disimpan di folder <code>thumbs</code>. Gambar asli selalu dipakai untuk Send ke AE dan export.</div>
+</section>
+
+<section id="youtube">
+  <h2>Video &amp; YouTube</h2>
+  <p class="lede">Kartu video punya dua mode: thumbnail ringan untuk disusun, dan player penuh saat diputar.</p>
+  <div class="feature"><h3>Video lokal</h3><div><p>Format yang didukung: MP4 (H.264), WebM. Klik <b>Play</b> untuk memutar langsung di board. Bar kontrol player menyediakan play/pause, mute, scrub, dan tombol fullscreen di ujung kanan untuk menonton satu layar penuh (Esc untuk keluar). Klik videonya atau tombol besar di tengah untuk play/pause cepat ala YouTube. Selama player aktif, kursor di atas video adalah kursor biasa; menekan <b>Stop</b> di titlebar mengembalikannya ke kursor board.</p></div></div>
+  <div class="feature"><h3>YouTube</h3><div><p>Paste link YouTube — judul asli diambil otomatis. Klik <b>Play</b> untuk player, <b>Stop</b> untuk kembali ke thumbnail agar kartu bisa di-drag lagi.</p></div></div>
+  <div class="callout warn"><strong>Video "unavailable".</strong> Sebagian video YouTube menonaktifkan embedding oleh pemiliknya — video tersebut tetap bisa diputar di youtube.com tapi tidak di player tertanam. Ini pembatasan dari YouTube. Klik <b>Open</b> untuk nonton di browser.</div>
+</section>
+
+<section id="notes">
+  <h2>Catatan teks</h2>
+  <p class="lede">Klik canvas dengan tool Text untuk membuat catatan; tahan <b>Alt</b> saat klik untuk snap titik asal catatan ke tepi atau tengah item lain. Double-click catatan untuk mengedit. Catatan tumbuh otomatis mengikuti isi teks.</p>
+  <h3>Format teks</h3>
+  <ul>
+    <li>Font, ukuran, <b>bold</b>, <i>italic</i>, underline.</li>
+    <li>Klik di luar daftar font menutup daftar tanpa mengubah font catatan.</li>
+    <li>Perataan horizontal &amp; vertikal, line height, letter spacing.</li>
+    <li>Bulleted list dan numbered list.</li>
+    <li>Teks horizontal atau vertikal (tategaki).</li>
+  </ul>
+  <h3>Seleksi teks tanpa edit mode</h3>
+  <p>Tahan <b>Ctrl</b> lalu <b>drag di atas teks</b> untuk highlight, tanpa perlu double-click masuk mode editing. Selama Ctrl ditahan di atas teks catatan, kursor berubah menjadi kursor teks sebagai penanda. Drag biasa di mana pun pada catatan memindahkannya, sama seperti item lain. Teks yang di-highlight bisa langsung dikirim ke After Effects (lihat <a href="#ae">Workflow AE</a>).</p>
+  <h3>Kotak catatan</h3>
+  <p>Atur warna teks, background, padding, corner radius, dan opacity. Semua perubahan mendukung Undo.</p>
+</section>
+
+<section id="drawing">
+  <h2>Drawing &amp; shape</h2>
+  <div class="feature"><h3>Draw <kbd>P</kbd></h3><div><p>Gambar bebas dengan pen. Atur warna, ketebalan, dan opacity di panel drawing. Slider <em>Smoothing</em> di panel menstabilkan goresan dari getaran tangan: nilai lebih tinggi memberi garis yang lebih halus tetapi lebih mengikuti di belakang kursor, dan 0 mematikannya sama sekali.</p></div></div>
+  <div class="feature"><h3>Shape <kbd>U</kbd></h3><div><p>Persegi, lingkaran, garis, dan panah. <kbd>Shift</kbd> untuk proporsi sempurna (kotak jadi persegi, dll). <kbd>Alt</kbd> untuk snap titik akhir ke tepi atau tengah item lain.</p></div></div>
+  <div class="feature"><h3>Erase</h3><div><p>Hapus seluruh drawing/shape. Gambar dan catatan tidak tersentuh.</p></div></div>
+</section>
+
+<section id="transform">
+  <h2>Seleksi &amp; transform</h2>
+  <div class="feature"><h3>Select</h3><div><p>Klik untuk seleksi tunggal. Drag area kosong untuk marquee. Tahan kotak marquee di tepi panel untuk menggeser tampilan (edge pan) dan memperluas seleksi melampaui area yang terlihat; kecepatannya diatur di Preferences. <kbd>Ctrl</kbd> + klik untuk toggle. <kbd>Ctrl</kbd> + <kbd>A</kbd> untuk semua. Kursor di atas item yang belum terseleksi adalah panah biasa; kursor berubah menjadi move hanya di atas item yang sedang terseleksi, dan bertahan sebagai move selama drag memindahkan berlangsung.</p></div></div>
+  <div class="feature"><h3>Move</h3><div><p>Drag seleksi; tahan di tepi panel untuk edge pan bila tujuan berada di luar tampilan. Tahan <kbd>Ctrl</kbd> untuk snap ke grid, <kbd>Alt</kbd> untuk snap ke objek terdekat.</p></div></div>
+  <div class="feature"><h3>Resize</h3><div><p>Pakai delapan handle di sekeliling seleksi. Kursor rotate mengikuti rotasi item, jadi arah panahnya selalu searah dengan sudut yang sedang ditarik. Item video (file video dan YouTube) selalu mengunci aspek rasio agar tidak gepeng. Gambar bebas diubah per sisinya. <kbd>Shift</kbd> mengunci aspek rasio untuk item apa pun, <kbd>Ctrl</kbd> mengaktifkan snap ukuran, <kbd>Alt</kbd> menempelkan tepi yang ditarik ke tepi atau tengah item lain.</p></div></div>
+  <div class="feature"><h3>Rotate</h3><div><p>Hover di dekat sudut selection box hingga kursor panah melengkung muncul, lalu drag. <kbd>Ctrl</kbd> snap 10°, <kbd>Shift</kbd> snap 45°.</p></div></div>
+  <div class="feature"><h3>Crop <kbd>C</kbd></h3><div><p>Pilih satu gambar, tekan <kbd>C</kbd> atau klik <b>Crop</b>. Atur frame, <kbd>Enter</kbd> untuk terapkan, <kbd>Esc</kbd> untuk batal. Non-destruktif — file asli tidak diubah.</p></div></div>
+</section>
+
+<section id="organize">
+  <h2>Arrange &amp; group</h2>
+  <p class="lede">Pilih minimal dua objek, tekan <kbd>A</kbd> untuk buka panel Arrange.</p>
+  <h3>Align &amp; Distribute</h3>
+  <p><b>Align</b> menyamakan posisi tepi (kiri, tengah, kanan, atas, tengah vertikal, bawah). <b>Distribute</b> meratakan jarak antar objek — butuh minimal tiga objek; yang paling ujung diam, yang tengah digeser sampai spasinya sama.</p>
+  <h3>Size</h3>
+  <p>Samakan lebar, tinggi, atau keduanya. Atau normalisasi ke area terbesar/terkecil dengan proporsi tetap.</p>
+  <h3>Layout</h3>
+  <div class="compare">
+    <div><h4>Grid</h4><p>Kisi-kisi rapi dengan sel seragam. Cocok untuk item berukuran mirip.</p></div>
+    <div><h4>Pack</h4><p>Disusun sepadat mungkin untuk menghemat ruang. Cocok untuk item berukuran acak.</p></div>
+  </div>
+  <div class="compare">
+    <div><h4>Stack H / Stack V</h4><p>Satu baris horizontal atau satu kolom vertikal, otomatis rata tengah di sumbu tegak lurusnya. Cocok untuk sequence atau perbandingan.</p></div>
+    <div><h4>Gap</h4><p>Slider 0–100px untuk atur jarak antar item. Berlaku untuk Grid, Pack, dan Stack.</p></div>
+  </div>
+  <h3>Group</h3>
+  <p>Group bergerak sebagai satu unit. Double-click anggota atau pilih <b>Edit group contents</b> untuk masuk. Tidak mendukung nested group.</p>
+  <h3>Sections</h3>
+  <p>Section adalah frame bernama untuk membagi board menjadi wilayah-wilayah, misalnya per tema referensi (<i>Karakter</i>, <i>Latar</i>, <i>Palet Warna</i>) atau per tahap pengerjaan. Klik <b>Section</b> di toolbar lalu drag di canvas untuk menggambar framenya (tahan <b>Shift</b> untuk mengunci proporsi 1:1, tahan <b>Alt</b> untuk snap sudut ke tepi atau tengah item lain); drag yang terlalu kecil diganti frame ukuran default di titik klik. Beri nama langsung setelah membuat, atau double-click labelnya kapan saja untuk rename.</p>
+  <p>Keanggotaan section bersifat spasial: item apa pun yang titik tengahnya berada di dalam frame dianggap isinya. Seret label section untuk memindahkan frame beserta seluruh isinya sekaligus. Item di dalamnya tetap individual, bisa diseleksi, dipindah keluar masuk frame, dan dikirim ke AE seperti biasa. Menghapus section hanya menghapus framenya, isinya tetap di board. Beda dengan Group: group mengikat item jadi satu unit, sedangkan section adalah wilayah visual, jadi keduanya bisa dipakai bersamaan.</p>
+  <p>Seleksi sebuah section lalu buka <b>Properties</b> untuk mengaturnya: nama, warna tint custom lewat color picker (atau ikuti warna aksen board lewat tombol Theme), berguna sebagai kode warna per bagian, intensitas tint, ketebalan dan gaya garis frame (solid/dashed), radius sudut, ukuran label (S/M/L, dan ukuran label, garis, serta radius selalu menyesuaikan besar section), posisi label dengan pemilih titik anchor 3×3 (sembilan posisi, di dalam atau di luar frame), tampil/sembunyi label, dan tombol <b>Arrange contents</b> (rapikan isi ke grid di dalam frame) serta <b>Fit frame to contents</b> (frame menyusut pas mengitari isinya). Matikan <b>Contents follow when dragging</b> bila frame perlu digeser tanpa membawa isinya. Gaya terakhir yang dipakai tersimpan dan menjadi gaya awal untuk section berikutnya.</p>
+</section>
+
+<section id="properties">
+  <h2>Properties</h2>
+  <p>Tekan <kbd>E</kbd> atau klik <b>Properties</b> untuk panel konteks sesuai seleksi: opacity objek, flip horizontal/vertikal gambar, crop, relink, dan pengaturan spesifik tiap tipe.</p>
+</section>
+
+<section id="appearance">
+  <h2>Tampilan board</h2>
+  <h3>Canvas settings</h3>
+  <p>Background, gaya grid (dots/lines/none), warna &amp; ukuran grid, opacity grid, warna aksen, warna panel, warna teks, dan auto-hide toolbar. Warna panel dan teks menema seluruh panel dan menu board ini; nuansa turunannya (latar aplikasi, kontrol, hover, garis, teks redup) dihitung otomatis. Tersimpan bersama board dan mendukung Undo.</p>
+  <h3>Image thumbnails</h3>
+  <p>Thumbnail ringan dibuat otomatis untuk gambar besar agar navigasi tetap mulus. Pengaturan: aktif/nonaktif, ukuran (512/1024/2048px), dan batas zoom untuk tukar ke resolusi penuh. GIF dilewati agar animasi tetap berjalan. Khusus panel Items, baris GIF memakai pratinjau mini berupa satu frame diam supaya daftarnya tidak ikut bergerak; di board sendiri GIF tetap beranimasi.</p>
+  <h3>Color picker</h3>
+  <p>Mendukung HSB, RGB, HEX, preview, dan eyedropper layar. <b>OK</b>/<kbd>Enter</kbd> terapkan, <b>Cancel</b>/<kbd>Esc</kbd> kembalikan.</p>
+  <h3>Preferences</h3>
+  <p><b>MessBoard → Preferences…</b> menyimpan pengaturan instalasi ini (tidak ikut file board): label toolbar, kecepatan edge-pan, dan default untuk board baru.</p>
+</section>
+
+<section id="toolbar">
+  <h2>Toolbar</h2>
+  <p class="lede">Toolbar dikelompokkan berdasarkan fungsi. Saat jendela sempit, grup berprioritas rendah otomatis masuk ke menu <b>More</b>.</p>
+  <div class="feature"><h3>Create</h3><div><p><b>Add</b>, <b>Text</b>, <b>Draw</b>, <b>Shape</b>, <b>Erase, Section</b> — membuat objek baru.</p></div></div>
+  <div class="feature"><h3>Modify</h3><div><p><b>Arrange</b>, <b>Properties</b>, <b>Crop</b> — mengatur objek yang diseleksi.</p></div></div>
+  <div class="feature"><h3>History</h3><div><p><b>Undo</b> (<kbd>Ctrl</kbd>+<kbd>Z</kbd>), <b>Redo</b> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd>) — selalu terlihat.</p></div></div>
+  <div class="feature"><h3>Board</h3><div><p><b>Send</b> — kirim ke After Effects (<kbd>I</kbd>). <b>Replace</b> — ganti konten/source layer AE terpilih (<kbd>Shift</kbd>+<kbd>I</kbd>). <b>Fit</b> — tampilkan seluruh board (<kbd>Shift</kbd>+<kbd>F</kbd>). <b>Items</b> — daftar semua objek.</p></div></div>
+  <h3>Mode label</h3>
+  <p>Di Preferences pilih <b>Labels</b> (teks di samping ikon) atau <b>Icons</b> (ikon saja, lebih ringkas untuk jendela sempit).</p>
+</section>
+
+<section id="ae">
+  <h2>Workflow After Effects</h2>
+  <p class="lede">Jembatan dua arah antara board dan composition.</p>
+  <div class="feature"><h3>Send <kbd>I</kbd></h3><div><p>Kirim gambar, video lokal, dan catatan yang diseleksi ke composition aktif. Posisi, skala, rotasi, opacity, dan crop mask diterjemahkan ke layer AE.</p><p><b>Smart placement:</b> jika ada layer terseleksi di AE, layer baru muncul tepat di atasnya dengan durasi (in/out point) yang sama. Jika tidak ada, layer dibuat di paling atas dengan durasi default.</p></div></div>
+  <div class="feature"><h3>Catatan → text layer</h3><div><p>Catatan dikirim sebagai <b>text layer native</b> (bukan gambar). Font dan ukuran mengikuti default After Effects.</p><p><b>Seleksi teks:</b> Ctrl+drag untuk highlight sebagian teks catatan sebelum Send, hanya bagian itu yang dikirim.</p></div></div>
+  <div class="feature"><h3>Replace <kbd>Shift</kbd>+<kbd>I</kbd></h3><div><p>Seperti <b>Alt+drag</b> dari Project panel — mengganti source tanpa mengubah sisanya.</p><p><b>Text:</b> jika ada text layer terseleksi di AE, isinya digantikan teks dari catatan (formatting tetap). Satu catatan mengganti semua text layer yang terseleksi.</p><p><b>Image/Video:</b> jika ada footage layer terseleksi di AE, source-nya digantikan gambar/video dari board (posisi, efek, keyframe tetap). Satu asset mengganti semua layer yang terseleksi; banyak asset dipasangkan satu-satu mengikuti urutan.</p> Cocok untuk alur berbasis template: susun satu versi sampai selesai, lalu ganti asetnya untuk membuat versi berikutnya.</p></div></div>
+  <div class="feature"><h3>Capture frame</h3><div><p>Ambil still dari composition aktif: full comp, layer terpilih, atau work area. Hasilnya jadi kartu gambar di board.</p></div></div>
+  <div class="feature"><h3>Project link</h3><div><p>Hubungkan board ke file AEP tertentu agar tidak salah kirim ke project lain.</p></div></div>
+  <div class="callout warn"><strong>Sebelum Capture/Send.</strong> Pastikan ada composition aktif. Untuk import teks pertama kali mungkin terasa lambat (AE menginisialisasi text engine) — selanjutnya instan.</div>
+</section>
+
+<section id="files">
+  <h2>File &amp; export</h2>
+  <div class="feature"><h3>Collect</h3><div><p>Salin gambar lokal ke folder pendamping board dan perbarui link-nya. File asli tidak diubah.</p></div></div>
+  <div class="feature"><h3>Board dari seleksi</h3><div><p>Buat file <code>.messboard</code> baru dari seleksi beserta asetnya, tanpa mengganti board aktif.</p></div></div>
+  <div class="feature"><h3>Portable ZIP</h3><div><p>Kemas board + gambar lokal jadi satu ZIP. Extract seluruhnya sebelum dibuka. Media online tetap berupa URL.</p></div></div>
+  <div class="feature"><h3>Export PNG</h3><div><p>Export board atau seleksi pada 0.5×, 1×, atau 2×. Background bisa transparan. Grid tidak ikut.</p></div></div>
+  <div class="feature"><h3>Gambar hilang</h3><div><p>Pakai <b>Check again</b>, <b>Search folder</b> (mencari rekursif berdasarkan nama file), atau <b>Relink</b> manual.</p></div></div>
+  <div class="callout"><strong>Board portable.</strong> Pindahkan <code>Board.messboard</code> bersama folder <code>Board_files</code> — jangan rename salah satunya saja.</div>
+  <div class="callout warn"><strong>Soal GIF.</strong> GIF diputar otomatis di board, tapi export PNG dan Send ke AE hanya membawa satu frame. Untuk animasi penuh, import GIF langsung di After Effects.</div>
+</section>
+
+<section id="save">
+  <h2>Save &amp; recovery</h2>
+  <ul>
+    <li><b>Saved</b> — board sama dengan file utama.</li>
+    <li><b>Unsaved</b> — objek atau pengaturan berubah. Pan/zoom tidak termasuk.</li>
+    <li><b>Autosave</b> — backup perlindungan, bukan pengganti Save. File arsip lama otomatis dihapus (maksimal 5 terbaru disimpan).</li>
+    <li><b>Recover autosave</b> — muat backup tanpa langsung menimpa file utama.</li>
+    <li><b>Save As</b> — salin board + aset ke nama lain. Nama board yang sudah ada boleh dipakai ulang setelah konfirmasi; isi dan aset board lama di nama itu akan diganti.</li>
+  </ul>
+  <div class="callout warn"><strong>Sebelum tutup After Effects.</strong> Tetap tekan <kbd>Ctrl</kbd> + <kbd>S</kbd>. Recovery membantu saat crash, bukan pengganti save eksplisit.</div>
+</section>
+
+<section id="shortcut">
+  <h2>Shortcut</h2>
+  <p class="muted">Shortcut huruf tunggal aktif saat fokus di kanvas, bukan saat mengetik.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Aksi</th><th>Shortcut</th><th>Catatan</th></tr></thead>
+    <tbody>
+      <tr><td>Text</td><td><kbd>T</kbd></td><td></td></tr>
+      <tr><td>Draw</td><td><kbd>P</kbd></td><td></td></tr>
+      <tr><td>Shape</td><td><kbd>U</kbd></td><td></td></tr>
+      <tr><td>Arrange</td><td><kbd>A</kbd></td><td></td></tr>
+      <tr><td>Properties</td><td><kbd>E</kbd></td><td></td></tr>
+      <tr><td>Crop</td><td><kbd>C</kbd></td><td>Satu gambar terseleksi</td></tr>
+      <tr><td>Send to AE</td><td><kbd>I</kbd></td><td></td></tr>
+      <tr><td>Undo / Redo</td><td><kbd>Ctrl</kbd> + <kbd>Z</kbd> / <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td><td></td></tr>
+      <tr><td>Duplicate</td><td><kbd>Ctrl</kbd> + <kbd>D</kbd></td><td></td></tr>
+      <tr><td>Select all</td><td><kbd>Ctrl</kbd> + <kbd>A</kbd></td><td></td></tr>
+      <tr><td>Delete</td><td><kbd>Del</kbd></td><td></td></tr>
+      <tr><td>Focus selection</td><td><kbd>F</kbd></td><td></td></tr>
+      <tr><td>Fit board</td><td><kbd>Shift</kbd> + <kbd>F</kbd></td><td></td></tr>
+      <tr><td>Pan</td><td><kbd>Space</kbd> + drag</td><td>atau tombol tengah mouse</td></tr>
+      <tr><td>Zoom</td><td>Scroll</td><td>Mengikuti pointer</td></tr>
+      <tr><td>Save</td><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="opensource">
+  <h2>Open source</h2>
+  <p class="lede">MessBoard adalah proyek open source. Source tersedia untuk dipelajari, di-fork, dan dikembangkan bersama.</p>
+  <ul>
+    <li><b>Boleh:</b> pakai gratis, modifikasi, distribusikan, kontribusi kembali.</li>
+    <li><b>Tidak boleh:</b> menjual MessBoard dalam bentuk apapun — termasuk dibundel ke produk berbayar.</li>
+    <li>File <code>LICENSE</code> di paket distribusi berisi aturan lengkapnya.</li>
+  </ul>
+  <div class="callout"><strong>Kontribusi.</strong> Fork, kembangkan, dan ajukan perubahanmu. Pastikan seluruh pengujian lulus (<code>node --test tests/</code>) sebelum mengajukan.</div>
+</section>
+
+<section id="changelog">
+  <h2>Changelog</h2>
+  <div class="changelog">
+    <div class="changelog-entry">
+      <span class="ver">v1.0.0</span>
+      <ul>
+        <li><b>Board tak terbatas:</b> kanvas infinite dengan pan dan zoom bebas untuk menyusun referensi visual dalam satu workspace, plus edge pan saat drag atau marquee ditahan di tepi panel.</li>
+        <li><b>Referensi lengkap:</b> gambar lokal, drag-and-drop, paste dari clipboard, URL gambar web, serta kartu video untuk YouTube dan file lokal.</li>
+        <li><b>Catatan teks:</b> sticky notes yang bisa dikirim sebagai text layer native ke After Effects, termasuk seleksi teks parsial.</li>
+        <li><b>Drawing &amp; shape:</b> pen, garis dengan arrowhead, dan 6 shape dengan fill, pattern garis, dan corner radius.</li>
+        <li><b>Organisasi:</b> group, sections (frame bernama yang memindahkan isinya saat digeser), arrange (grid, stack, pack) dengan pengaturan gap, Items panel dengan pencarian, dan auto-arrange saat mengimpor banyak file sekaligus.</li>
+        <li><b>Workflow After Effects:</b> Send (<kbd>I</kbd>) mengirim referensi sebagai layer terposisi; Replace (<kbd>Shift</kbd>+<kbd>I</kbd>) mengganti source atau teks seperti Alt+drag; smart placement mengikuti layer dan in/out point yang terpilih; capture frame comp langsung ke board.</li>
+        <li><b>Extract colors:</b> ekstrak palet warna dominan dari gambar, salin kode hex, dan taruh palet sebagai gambar di board.</li>
+        <li><b>File &amp; penyimpanan:</b> format .messboard, collect dan relink aset, export ZIP, thumbnail otomatis untuk board besar, autosave dengan recovery, dan Recent boards.</li>
+        <li><b>Tampilan:</b> grid yang bisa diganti mode (lines/dots/off), serta warna board, warna aksen, warna panel, dan warna teks yang dapat disesuaikan per board.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="troubleshoot">
+  <h2>Troubleshooting</h2>
+  <h3>Video lokal tidak bisa diputar</h3>
+  <p>Codec tidak didukung panel. Konversi ke <b>MP4 (H.264)</b> atau WebM, lalu relink.</p>
+  <h3>Video YouTube "unavailable"</h3>
+  <p>Pemilik video menonaktifkan embedding. Putar lewat tombol <b>Open</b> di browser.</p>
+  <h3>GIF tidak beranimasi saat dikirim ke AE</h3>
+  <p>Normal — Send hanya membawa satu frame. Import GIF langsung di AE untuk animasi penuh.</p>
+  <h3>YouTube tidak merespons drag</h3>
+  <p>Iframe player sedang aktif. Klik <b>Stop</b> untuk kembali ke mode thumbnail.</p>
+  <h3>Gambar jadi missing</h3>
+  <p>File dipindah/dihapus. Pakai <b>Relink</b> atau <b>Search folder</b>.</p>
+  <h3>Capture/Send gagal</h3>
+  <p>Pastikan ada composition aktif, project link benar, dan tidak ada operasi file/crop berjalan.</p>
+  <h3>Import teks pertama lambat (hingga ±30 detik)</h3>
+  <p>Saat teks pertama kali dikirim, After Effects dapat melakukan validasi font secara online. Jika koneksi internet lambat atau terputus, proses ini dapat memakan waktu hingga ±30 detik dan terasa seperti berhenti. Solusi: atur font default di panel Character ke font yang terpasang lokal (misalnya Arial), atau pastikan koneksi ke server Adobe tidak terhalang firewall/VPN.</p>
+  <h3>Board ZIP tidak bisa dibuka</h3>
+  <p>Extract seluruh ZIP dulu, lalu buka <code>.messboard</code> dengan folder pendamping di sebelahnya.</p>
+  <h3>MessBoard tidak muncul di AE</h3>
+  <p>Pastikan terinstal dengan struktur benar, buka via <b>Window → Extensions</b>. Jangan memasang dua versi dengan ID ekstensi yang sama secara bersamaan.</p>
+  <div class="compare">
+    <div><h4>Lapor masalah</h4><p>Sertakan versi AE, Windows, langkah reproduksi, pesan error, dan screenshot.</p></div>
+    <div><h4>Kontak</h4><p><a href="https://x.com/Maad_R">@Maad_R</a> di X.</p></div>
+  </div>
+  <div class="footer"><strong>MessBoard 1.0.0</strong> · Dibuat oleh Maad · Open source, tidak untuk dijual.<br>© 2026 Maad. All rights reserved.</div>
+</section>
+
+</article></main>
+</div>
+<script>
+(function(){
+ var input=document.getElementById('search'),article=document.querySelector('.content'),
+     sections=[].slice.call(document.querySelectorAll('main section')),
+     empty=document.getElementById('emptyResult'),
+     links=[].slice.call(document.querySelectorAll('nav a'));
+ function normal(v){return String(v||'').toLowerCase().replace(/\s+/g,' ').trim();}
+ input.addEventListener('input',function(){
+   var q=normal(input.value),hits=0;
+   article.classList.toggle('filtered',!!q);
+   sections.forEach(function(section){
+     var match=!q||normal(section.textContent).indexOf(q)>=0;
+     section.classList.toggle('match',match);
+     if(q&&match)hits++;
+   });
+   empty.classList.toggle('show',!!q&&hits===0);
+ });
+ links.forEach(function(link){link.addEventListener('click',function(){
+   links.forEach(function(o){o.classList.remove('active');});link.classList.add('active');
+ });});
+ if('IntersectionObserver' in window){
+   var io=new IntersectionObserver(function(es){es.forEach(function(e){
+     if(!e.isIntersecting)return;
+     var href='#'+e.target.id;
+     links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')===href);});
+   });},{rootMargin:'-10% 0px -70% 0px'});
+   sections.forEach(function(s){io.observe(s);});
+ }
+})();
+</script>
+</body>
+</html>

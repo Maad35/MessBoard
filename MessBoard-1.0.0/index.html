@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>MessBoard</title>
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/board-ui.css">
+  <link rel="stylesheet" href="css/files-ui.css">
+  <link rel="stylesheet" href="css/crop-ui.css">
+  <link rel="stylesheet" href="css/ae-ui.css">
+  <link rel="stylesheet" href="css/color-picker.css">
+  <link rel="stylesheet" href="css/note-ui.css">
+  <link rel="stylesheet" href="css/canvas-tools.css">
+  <link rel="stylesheet" href="css/drawing-ui.css">
+  <link rel="stylesheet" href="css/editor-menus.css">
+  <link rel="stylesheet" href="css/persistence.css">
+</head>
+<body>
+  <header class="rail">
+    <div class="rail-top">
+      <div class="brand">
+        <strong>MessBoard</strong>
+        <span id="boardName">Untitled board</span>
+      </div>
+      <nav aria-label="Main menu">
+        <button data-menu="boardMenu" aria-controls="boardMenu" aria-haspopup="menu" aria-expanded="false">Board</button>
+        <button data-menu="editMenu" aria-controls="editMenu" aria-haspopup="menu" aria-expanded="false">Edit</button>
+        <button data-menu="objectMenu" aria-controls="objectMenu" aria-haspopup="menu" aria-expanded="false">Object</button>
+        <button data-menu="viewMenu" aria-controls="viewMenu" aria-haspopup="menu" aria-expanded="false">View</button>
+        <button data-menu="appMenu" aria-controls="appMenu" aria-haspopup="menu" aria-expanded="false" title="MessBoard preferences and help">MessBoard</button>
+      </nav>
+      <button id="compactMenuBtn" data-menu="mainMenu" title="All menus">Menu</button>
+      <button id="saveBtn" class="save-button" title="Save board (Ctrl+S)">Save</button>
+    </div>
+    <div class="toolstrip" role="toolbar" aria-label="Board tools">
+      <button id="addBtn" class="add-button tool-primary" title="Add files">
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+              <span>Add</span>
+            </button>
+      <button id="noteBtn" class="tool-primary" title="Add text (T)">
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4V3h10v1M8 3v10M5.5 13h5"/></svg>
+              <span>Text</span>
+            </button>
+      <button id="drawBtn" class="tool-primary" title="Drawing tools (P)">
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m10.5 2.5 3 3-7.7 7.7-3.8.8.8-3.8ZM9 4l3 3"/></svg>
+              <span>Draw</span>
+            </button>
+      <button id="shapeBtn" class="tool-primary" title="Shape tools (U)"><svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="9" height="9"/><circle cx="10.5" cy="10.5" r="3.5"/></svg><span>Shape</span></button>
+      <button id="eraseBtn" class="tool-primary" title="Erase whole drawings and shapes; images and notes stay untouched" aria-pressed="false"><svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m9 2 5 5-7 7H4L1 11Zm-5 6 5 5M7 14h8"/></svg><span>Erase</span></button>
+      <button id="sectionBtn" class="tool-primary" title="Add section: drag on the canvas to frame an area"><svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" stroke-dasharray="2.5 2"/><path d="M4 6.5h5"/></svg><span>Section</span></button>
+      <span class="tool-divider" aria-hidden="true"></span>
+      <button id="arrangeBtn" class="tool-primary tool-arrange" title="Arrange selection"><svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 1v14M5 3h8v3H5ZM5 9h5v3H5Z"/></svg><span>Arrange</span></button>
+      <button id="propertiesBtn" class="tool-secondary" title="Properties for selected objects"><svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 12h12M6 2v4M10 10v4"/></svg><span>Properties</span></button>
+      <button id="cropBtn" class="tool-secondary" title="Crop selected image (C)">
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1v11h11M1 4h11v11M7 4h5v5"/></svg>
+              <span>Crop</span>
+            </button>
+      <span class="tool-divider" aria-hidden="true"></span>
+      <button id="undoBtn" class="tool-primary" title="Undo (Ctrl+Z)" disabled>
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m5 3-3 3 3 3M2 6h7a4 4 0 0 1 0 8"/></svg>
+              <span>Undo</span>
+            </button>
+      <button id="redoBtn" class="tool-primary" title="Redo (Ctrl+Shift+Z)" disabled>
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m11 3 3 3-3 3M14 6H7a4 4 0 0 0 0 8"/></svg>
+              <span>Redo</span>
+            </button>
+      <span class="tool-divider" aria-hidden="true"></span>
+      <button id="sendBtn" class="tool-primary" title="Send selected to AE (I)">
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h9M8 4l4 4-4 4M13 3v10"/></svg>
+              <span>Send</span>
+            </button>
+      <button id="replaceBtn" class="tool-primary" title="Replace in AE (Shift+I)">
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4h8v8H4z"/><path d="M2 8h2M12 8h2M8 2v2M8 12v2"/></svg>
+              <span>Replace</span>
+            </button>
+      <button id="fitBtn" class="tool-secondary" title="Fit board (Shift+F)">
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2H2v4M10 2h4v4M14 10v4h-4M6 14H2v-4"/><rect x="5" y="5" width="6" height="6"/></svg>
+              <span>Fit</span>
+            </button>
+      <button id="itemsBtn" class="tool-secondary" title="Board items">
+              <svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4h8M6 8h8M6 12h8M2 4h1M2 8h1M2 12h1"/></svg>
+              <span>Items</span>
+            </button>
+      <button id="moreToolsBtn" data-menu="moreMenu" title="More tools">More</button>
+    </div>
+  </header>
+
+  <div id="boardMenu" class="command-menu" role="menu" aria-label="Board" hidden>
+    <button id="newBtn" role="menuitem">New board…</button>
+    <button id="openBtn" role="menuitem">Open board…</button>
+    <button id="openRecentBtn" role="menuitem" aria-haspopup="menu">Open recent…</button>
+    <button data-activate="saveBtn" role="menuitem">Save board <kbd>Ctrl+S</kbd></button>
+    <button id="saveAsBtn" role="menuitem" title="Copy this board and its owned assets to another name; an existing board can be replaced">Save As… <kbd>Ctrl+Shift+S</kbd></button>
+    <button id="restoreBtn" role="menuitem" title="Restore last autosave">Recover autosave</button>
+    <button data-command="import-board" role="menuitem" title="Add another saved board's items here without replacing this board">Import board into canvas…</button>
+    <span class="menu-separator" role="separator"></span>
+    <button id="filesBtn" role="menuitem">Files &amp; Export…</button>
+  </div>
+  <div id="editMenu" class="command-menu" role="menu" aria-label="Edit" hidden>
+    <button data-activate="undoBtn" role="menuitem">Undo <kbd>Ctrl+Z</kbd></button>
+    <button data-activate="redoBtn" role="menuitem">Redo <kbd>Ctrl+Shift+Z</kbd></button>
+    <span class="menu-separator" role="separator"></span>
+    <button data-command="copy">Copy items <kbd>Ctrl+C</kbd></button>
+    <button data-command="paste">Paste clipboard <kbd>Ctrl+V</kbd></button>
+    <button data-command="paste-items">Paste items</button>
+    <button data-command="duplicate">Duplicate <kbd>Ctrl+D</kbd></button>
+    <button data-command="delete" class="danger">Delete selection <kbd>Del</kbd></button>
+    <span class="menu-separator" role="separator"></span>
+    <button data-command="select-all">Select all <kbd>Ctrl+A</kbd></button>
+    <button data-command="deselect">Deselect all</button>
+  </div>
+  <div id="objectMenu" class="command-menu" role="menu" aria-label="Object" hidden>
+    <button data-activate="arrangeBtn">Arrange selection…</button>
+    <button data-activate="propertiesBtn">Properties… <kbd>E</kbd></button>
+    <button id="noteSettingsBtn" role="menuitem" disabled>Note settings…</button>
+    <button id="drawingSettingsBtn" role="menuitem" disabled>Drawing settings…</button>
+    <button data-activate="cropBtn">Crop image… <kbd>C</kbd></button>
+    <span class="menu-separator" role="separator"></span>
+    <button data-command="group">Group</button><button data-command="ungroup">Ungroup</button>
+    <button data-command="enter-group">Edit group contents</button><button data-command="exit-group">Exit group</button>
+    <span class="menu-separator" role="separator"></span>
+    <button data-command="front">Bring to front</button><button data-command="forward">Bring forward</button><button data-command="backward">Send backward</button><button data-command="back">Send to back</button>
+    <button data-command="lock">Lock selection</button><button data-command="hide">Hide selection</button>
+  </div>
+  <div id="viewMenu" class="command-menu" role="menu" aria-label="View" hidden>
+    <button id="focusSelectionBtn" role="menuitem" disabled>Focus selection <kbd>F</kbd></button>
+    <button data-activate="fitBtn" role="menuitem">Fit board <kbd>Shift+F</kbd></button>
+    <button data-activate="itemsBtn" role="menuitem">Board items…</button>
+    <span class="menu-separator" role="separator"></span>
+    <button id="settingsBtn" role="menuitem">Canvas settings…</button>
+    <button data-command="grid">Hide grid</button>
+  </div>
+  <div id="aeMenu" class="command-menu" role="menu" aria-label="After Effects" hidden>
+    <button id="captureBtn" role="menuitem">Capture AE frame</button>
+    <button id="importBtn" role="menuitem">Send selected to AE <kbd>I</kbd></button>
+    <span class="menu-separator" role="separator"></span>
+    <button id="aeBtn" role="menuitem">AE tools…</button>
+  </div>
+
+  <div id="appMenu" class="command-menu" role="menu" aria-label="MessBoard" hidden>
+    <button id="preferencesBtn">Preferences…</button><button id="shortcutsBtn">Keyboard shortcuts…</button><button id="aboutBtn">About MessBoard…</button>
+  </div>
+  <div id="mainMenu" class="command-menu" role="menu" aria-label="All menus" hidden>
+    <button data-submenu="boardMenu">Board</button><button data-submenu="editMenu">Edit</button><button data-submenu="objectMenu">Object</button><button data-submenu="viewMenu">View</button><button data-submenu="aeMenu">AE</button><button data-submenu="appMenu">MessBoard</button>
+  </div>
+  <div id="moreMenu" class="command-menu" role="menu" aria-label="More tools" hidden>
+    <button data-activate="propertiesBtn">Properties… <kbd>E</kbd></button><button data-activate="cropBtn">Crop image… <kbd>C</kbd></button>
+    <button data-activate="fitBtn">Fit board <kbd>Shift+F</kbd></button><button data-activate="itemsBtn">Board items…</button>
+  </div>
+  <div id="eraseStatus" class="editor-mode-status" role="status" hidden>Erase active — drawings &amp; shapes only · Esc to stop</div>
+  <div id="palettePanel" class="tool-panel" hidden>
+    <h2>Extracted Colors</h2>
+    <p class="panel-help">Click a color to copy its hex code.</p>
+    <div id="paletteSwatches" class="palette-swatches"></div>
+    <button id="placePaletteBtn" class="primary-button" style="margin-top:12px;width:100%;">Place on board</button>
+    <button id="closePalette" class="panel-done">Done</button>
+  </div>
+  <div id="toolbarHotzone" aria-hidden="true"></div>
+  <main id="viewport" tabindex="0" aria-label="Reference board">
+    <div id="world"></div>
+    <div id="selectionBox" class="selected" style="display:none" aria-label="Transform selection"></div>
+    <div id="groupScope" hidden><span id="groupScopeLabel"></span><button id="exitGroup">Exit group · Esc</button></div>
+    <svg id="drawPreview" style="display:none" aria-hidden="true"></svg>
+    <div id="marquee" hidden></div>
+    <div id="empty">
+      <svg class="empty-art" viewBox="0 0 56 40" aria-hidden="true"><rect x="3" y="8" width="36" height="28" rx="1"/><path d="M12 8V3h40v28H39M8 30l9-10 6 6 5-5 6 9"/><circle cx="29" cy="15" r="2"/></svg>
+      <h1>Make room for your references</h1>
+      <p>Drop image files here, paste a screenshot with <kbd>Ctrl+V</kbd>, or choose <b>Add</b>.</p>
+      <button id="emptyAdd">Choose images</button>
+    </div>
+    <div id="readout">100% · 0 references</div>
+    <div id="rotationReadout" role="status" hidden></div>
+    <div id="notice" role="status" aria-live="polite"></div>
+  </main>
+<aside id="arrangePanel" class="tool-panel arrange-panel" hidden aria-labelledby="arrangeHeading">
+ <h2 id="arrangeHeading">Arrange selection</h2><p id="arrangeStatus" class="panel-help" role="status">Select at least two movable objects or groups.</p>
+ <section><h3>Align</h3><div class="arrange-grid"><button id="alignLeft">Left</button><button id="alignCenter" title="Horizontal center">H center</button><button id="alignRight">Right</button><button id="alignTop">Top</button><button id="alignMiddle" title="Vertical center">V center</button><button id="alignBottom">Bottom</button></div></section>
+ <section><h3>Distribute</h3><p class="panel-help">Requires three movable objects or groups.</p><div class="arrange-grid"><button id="distributeH">Horizontal</button><button id="distributeV">Vertical</button></div></section>
+ <section><h3>Size</h3><div class="arrange-grid"><button id="matchWidth">Width</button><button id="matchHeight">Height</button><button id="matchBoth">Both</button><button id="normalizeLargest" title="Match the largest bounding-box area, preserving proportions">Largest area</button><button id="normalizeSmallest" title="Match the smallest bounding-box area, preserving proportions">Smallest area</button></div></section>
+ <section><h3>Layout</h3><div class="arrange-grid"><button id="autoGrid">Grid</button><button id="packItems">Pack</button><button id="stackH">Stack H</button><button id="stackV">Stack V</button></div><label class="gap-row">Gap <span class="numeric-slider"><input id="layoutGap" type="range" min="0" max="100" step="1" value="20"><input id="layoutGapNumber" type="number" min="0" max="100" step="1" value="20"><span>px</span></span></label></section>
+ <p class="panel-help">Groups move together. Hidden or locked groups stay in place.</p><button id="closeArrange">Done</button>
+</aside>
+<aside id="propertiesPanel" class="tool-panel" hidden aria-labelledby="propertiesHeading"><h2 id="propertiesHeading">Properties</h2><p id="propertiesSummary" class="panel-help"></p><section id="appearanceProperties" hidden><h3>Appearance</h3><label class="object-opacity">Object opacity <span class="numeric-slider"><input data-object-opacity type="range" min="0" max="100" step="1" value="100"><input data-object-opacity-number type="number" min="0" max="100" step="1" value="100"><span>%</span></span></label></section><section id="imageProperties" hidden><h3>Image</h3><label class="toggle-row">Flip horizontal <input id="flipH" type="checkbox"></label><label class="toggle-row">Flip vertical <input id="flipV" type="checkbox"></label><button data-command="crop">Crop image…</button><button data-command="copy-image">Copy image</button><button data-command="relink">Relink image…</button></section><section id="sourceProperties" hidden><h3>Source</h3><p id="sourceName" class="source-file" title=""></p><button id="revealSource" data-command="reveal-source">Show in Explorer</button></section><div id="linkProperties" hidden><section class="link-editor"><h3>Link</h3><label class="link-url-label" for="linkUrl"><span>URL</span><input id="linkUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false"></label><div class="link-editor-actions"><button data-command="open-link">Open in browser</button><button id="applyLinkUrl" class="primary-button" type="button">Apply</button></div></section></div><section id="sectionProperties" hidden><h3>Section</h3>
+<label class="section-name-label" for="sectionName"><span>Name</span><input id="sectionName" type="text" maxlength="128" autocomplete="off" spellcheck="false"></label>
+<div class="section-row"><span>Color</span><button type="button" class="color-well" id="sectionColorWell"><span></span><b id="sectionColorHex">#4096f3</b></button><button type="button" id="sectionColorTheme">Theme</button></div>
+<label>Tint <span class="numeric-slider"><input id="sectionTint" type="range" min="0" max="60" step="1" value="10"><input id="sectionTintNumber" type="number" min="0" max="60" step="1" value="10"><span>%</span></span></label>
+<label>Corner radius <span class="numeric-slider"><input id="sectionRadius" type="range" min="0" max="48" step="1" value="0"><input id="sectionRadiusNumber" type="number" min="0" max="48" step="1" value="0"><span>px</span></span></label>
+<div class="section-row cluster-start"><span>Border width</span><span class="seg-group" id="sectionStrokeWidth"><button type="button" data-w="1">1</button><button type="button" data-w="2">2</button><button type="button" data-w="3">3</button><button type="button" data-w="4">4</button></span></div>
+<div class="section-row cluster-tight"><span>Border style</span><span class="seg-group" id="sectionStrokeStyle"><button type="button" data-s="solid">Solid</button><button type="button" data-s="dashed">Dashed</button></span></div>
+<div class="section-row cluster-start"><span>Label size</span><span class="seg-group" id="sectionLabelSize"><button type="button" data-z="s">S</button><button type="button" data-z="m">M</button><button type="button" data-z="l">L</button></span></div>
+<div class="section-row cluster-tight position-row"><span>Label position</span><span class="anchor-pad" id="sectionAnchorPad"><span class="anchor-row"><button type="button" data-p="tl" title="Top left"></button><button type="button" data-p="tc" title="Top center"></button><button type="button" data-p="tr" title="Top right"></button></span><span class="anchor-row"><button type="button" data-p="ml" title="Middle left"></button><button type="button" data-p="c" title="Center"></button><button type="button" data-p="mr" title="Middle right"></button></span><span class="anchor-row"><button type="button" data-p="bl" title="Bottom left"></button><button type="button" data-p="bc" title="Bottom center"></button><button type="button" data-p="br" title="Bottom right"></button></span></span><span class="seg-group" id="sectionLabelPlace"><button type="button" data-o="in">Inside</button><button type="button" data-o="out">Outside</button></span></div>
+<label class="toggle-row cluster-tight">Show label <input id="sectionLabelShow" type="checkbox" checked></label>
+<label class="toggle-row cluster-start">Contents follow when dragging <input id="sectionFollow" type="checkbox" checked></label>
+<button id="sectionArrange" type="button">Arrange contents</button><button id="sectionFit" type="button">Fit frame to contents</button>
+</section><button id="closeProperties">Done</button></aside>
+<aside id="preferencesPanel" class="tool-panel" hidden aria-labelledby="preferencesHeading"><h2 id="preferencesHeading">Preferences</h2><p class="panel-help">This installation only. Saved separately from your boards.</p><section><h3>Toolbar</h3><label>Labels <select id="toolbarLabels"><option value="labels">Labels</option><option value="icons">Icons</option></select></label><p class="panel-help">Labels shows text next to toolbar icons. Icons shows icons only; tooltips and keyboard shortcuts still work.</p></section><section><h3>New board defaults</h3><p class="panel-help">Use the current background, grid, accent and auto-hide settings for future new boards. Existing boards stay unchanged.</p><button id="useBoardDefaults">Use current board as defaults</button><button id="resetBoardDefaults">Restore defaults</button></section><section><h3>Canvas navigation</h3><p class="panel-help">Speed of the camera follow when dragging an object past the panel edge.</p><label>Edge pan speed <span class="numeric-slider"><input id="edgePanSpeed" type="range" min="0.2" max="6" step="0.1" value="2.5" aria-label="Edge pan speed"><input id="edgePanSpeedNumber" type="number" min="0.2" max="6" step="0.1" value="2.5" aria-label="Edge pan speed value"><span>px</span></span></label></section><p id="preferencesStatus" class="panel-help" role="status"></p><button id="closePreferences">Done</button></aside>
+<aside id="shortcutsPanel" class="tool-panel" hidden aria-labelledby="shortcutsHeading"><h2 id="shortcutsHeading">Keyboard shortcuts</h2>
+ <section><h3>Tools</h3><dl class="editor-shortcuts"><dt>Select</dt><dd>V</dd><dt>Text</dt><dd>T</dd><dt>Draw</dt><dd>P</dd><dt>Shape</dt><dd>U</dd><dt>Stop erasing</dt><dd>Esc</dd></dl></section>
+ <section><h3>Board</h3><dl class="editor-shortcuts"><dt>Save</dt><dd>Ctrl+S</dd><dt>Save As</dt><dd>Ctrl+Shift+S</dd></dl></section>
+ <section><h3>Edit</h3><dl class="editor-shortcuts"><dt>Undo</dt><dd>Ctrl+Z</dd><dt>Redo</dt><dd>Ctrl+Shift+Z or Ctrl+Y</dd><dt>Copy</dt><dd>Ctrl+C</dd><dt>Paste</dt><dd>Ctrl+V</dd><dt>Duplicate</dt><dd>Ctrl+D</dd><dt>Select all</dt><dd>Ctrl+A</dd><dt>Delete</dt><dd>Delete or Backspace</dd></dl></section>
+ <section><h3>Object</h3><dl class="editor-shortcuts"><dt>Properties</dt><dd>E</dd><dt>Crop image</dt><dd>C</dd><dt>Arrange selection</dt><dd>A</dd></dl></section>
+ <section><h3>View</h3><dl class="editor-shortcuts"><dt>Focus selection</dt><dd>F</dd><dt>Fit board</dt><dd>Shift+F</dd><dt>Pan</dt><dd>Hold Space and drag, or middle drag</dd><dt>Zoom</dt><dd>Scroll</dd></dl></section>
+ <section><h3>After Effects</h3><dl class="editor-shortcuts"><dt>Send selected to AE</dt><dd>I</dd><dt>Replace in AE</dt><dd>Shift+I</dd></dl></section>
+ <section><h3>Canvas gestures</h3><dl class="editor-shortcuts"><dt>Move snap</dt><dd>Ctrl while dragging</dd><dt>Nearby snap</dt><dd>Alt while dragging</dd><dt>Resize snap</dt><dd>Ctrl while resizing</dd><dt>Aspect lock</dt><dd>Shift while resizing</dd><dt>Rotation snap</dt><dd>Ctrl: 10° · Shift: 45°</dd><dt>Close menu</dt><dd>Esc</dd></dl></section>
+ <button id="closeShortcuts">Done</button></aside>
+<aside id="aboutPanel" class="tool-panel" hidden aria-labelledby="aboutHeading"><h2 id="aboutHeading">MessBoard</h2><p class="panel-help">Your beautifully messy visual workspace</p><p class="panel-help">Made by Maad · Version 1.0.0</p><p class="panel-help">Open source · Not for sale.</p><p class="panel-help">© 2026 Maad. All rights reserved.</p><button id="closeAbout">Done</button></aside>
+<aside id="itemsPanel" class="tool-panel items-panel" hidden aria-labelledby="itemsHeading">
+  <div class="items-header"><h2 id="itemsHeading">Items</h2><span id="itemsCount">0 items</span><button id="closeItems" title="Close Items" aria-label="Close Items"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div>
+  <div class="items-search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="8" r="4.5"/><path d="m11.5 11.5 5 5"/></svg><input id="itemsSearch" type="search" placeholder="Find an item…" aria-label="Find an item" autocomplete="off" spellcheck="false"><button id="itemsClearSearch" title="Clear search" aria-label="Clear search"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6 8 8M14 6 6 14"/></svg></button></div>
+  <button id="itemsExitGroup" hidden>Exit group editing</button>
+  <div id="itemList" role="tree" tabindex="0" aria-label="Board layers, front to back" aria-multiselectable="true"></div>
+  <div class="items-footer">
+    <div class="items-actions" role="group" aria-label="Layer actions">
+      <button id="showAllItems" title="Show all items" aria-label="Show all items"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 10s3-5 8-5 8 5 8 5-3 5-8 5-8-5-8-5Z"/><circle cx="10" cy="10" r="2"/></svg></button>
+      <button id="itemsUp" title="Move forward" aria-label="Move forward"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 11 5-5 5 5M10 6v10"/></svg></button>
+      <button id="itemsDown" title="Move backward" aria-label="Move backward"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 9 5 5 5-5M10 14V4"/></svg></button>
+      <span class="items-divider" aria-hidden="true"></span>
+      <button id="itemsGroup" title="Group selection" aria-label="Group selection"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 6V2h4M14 2h4v4M18 14v4h-4M6 18H2v-4"/><rect x="6" y="6" width="8" height="8"/></svg></button>
+      <button id="itemsUngroup" title="Ungroup selection" aria-label="Ungroup selection"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6"/><rect x="11.5" y="11.5" width="6" height="6"/><path d="m12 6 5-4M14 2h3v3M8 14l-5 4M6 18H3v-3"/></svg></button>
+      <button id="itemsRename" title="Rename item (F2)" aria-label="Rename item"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 12 9-9 4 4-9 9-5 1ZM11 5l4 4"/></svg></button>
+      <button id="itemsDuplicate" title="Duplicate selection" aria-label="Duplicate selection"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M4 13H3V3h10v1M10 12h4M12 10v4"/></svg></button>
+      <button id="itemsDelete" title="Delete selection" aria-label="Delete selection"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M7 5V3h6v2M5 5l1 12h8l1-12M8 8v6M12 8v6"/></svg></button>
+    </div>
+    <p id="itemsStatus" role="status">Front to back · drag to reorder</p>
+  </div>
+</aside>
+<aside id="filesPanel" class="tool-panel files-panel" hidden aria-labelledby="filesHeading">
+ <h2 id="filesHeading">Files &amp; Export</h2>
+ <p id="saveDetails" class="panel-help" role="status"></p>
+ <section><h3>Collect images</h3><p class="panel-help">Copy local images into this board’s assets folder. Originals stay untouched. Move the JSON and its companion folder together.</p><div class="file-actions"><button id="collectAll">Collect all</button><button id="collectSelection">Collect selection</button></div></section>
+ <section><h3>Selection board</h3><p class="panel-help">Save selected items as a separate .messboard with their local images. This board stays unchanged. Keep the new file and companion folder together.</p><button id="exportSelectionBoard">Export selection as board…</button></section>
+ <section><h3>Portable package</h3><p class="panel-help">ZIP includes the current board and all local images, including hidden items. Online media remain links.</p><button id="exportPackage">Export ZIP…</button></section>
+ <section><h3>PNG image</h3><label>Include <select id="exportScope"><option value="board">Visible board</option><option value="selection">Visible selection</option></select></label><label>Resolution <select id="exportScale"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label><label class="toggle-row">Transparent background <input id="exportTransparent" type="checkbox" checked></label><p class="panel-help">No grid or selection outlines. Online media export as labeled cards, not video frames.</p><button id="exportPNG">Export PNG…</button></section>
+ <section><h3>Missing images</h3><div class="file-actions"><button id="scanMissing">Check again</button><button id="batchRelink">Search folder…</button></div><div id="missingList"></div></section>
+ <p id="filesStatus" class="panel-help" role="status" aria-live="polite"></p><button id="cancelFileJob" hidden>Cancel operation</button><button id="closeFiles">Done</button>
+</aside>
+  <aside id="drawingEditPanel" class="tool-panel drawing-panel" hidden aria-labelledby="drawingEditHeading">
+    <h2 id="drawingEditHeading">Editing drawing</h2>
+    <label class="object-opacity">Object opacity <span class="numeric-slider"><input data-object-opacity type="range" min="0" max="100" step="1" value="100"><input data-object-opacity-number type="number" min="0" max="100" step="1" value="100"><span>%</span></span></label>
+    
+    <section id="editStrokeFillFields" class="drawing-section" hidden>
+      <label class="toggle-row">Fill <input id="editStrokeFillEnabled" type="checkbox"></label>
+      <label>Fill color <button class="color-well" data-color-target="editStrokeFillColor"><span></span><b id="editStrokeFillColor">#4096f3</b></button></label>
+      <label class="toggle-row">Outline <input id="editStrokeOutlineEnabled" type="checkbox" checked></label>
+    </section>
+    <section id="editStrokeOutlineFields" class="drawing-section">
+      <label>Stroke color <button class="color-well" data-color-target="editStrokeColor"><span></span><b id="editStrokeColor">#4096f3</b></button></label>
+      <label for="editStrokeWidthNumber">Width <span class="drawing-width"><input id="editStrokeWidth" type="range" min="1" max="64" step="1" value="4" aria-label="Stroke width"><input id="editStrokeWidthNumber" type="number" min="1" max="64" step="1" value="4" aria-label="Stroke width value"></span></label>
+      <label>Pattern <select id="editStrokeStyle"><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option></select></label>
+      <svg id="editStrokePatternSample" class="drawing-pattern" viewBox="0 0 240 12" aria-hidden="true"><path d="M 4 6 H 236"/></svg>
+      <div id="editStrokeDashFields" hidden><label>Dash length <input id="editStrokeDashLength" type="number" min="0.1" step="0.5" value="4"></label><label>Dash gap <input id="editStrokeDashGap" type="number" min="0.1" step="0.5" value="2"></label><p class="panel-help">Dash values are multiples of stroke width.</p></div>
+    </section>
+    <section id="editStrokeLineFields" class="drawing-section">
+      <label>Arrowheads <select id="editStrokeArrow"><option value="none">None</option><option value="start">Start</option><option value="end">End</option><option value="both">Both</option></select></label>
+      <div id="editStrokeArrowFields" hidden><label>Arrow size <input id="editStrokeArrowSize" type="number" min="0.1" step="0.25" value="1"></label><p class="panel-help">Size is relative to stroke width.</p></div>
+    </section>
+    <div id="editStrokeRadiusFields" hidden><label>Corner radius <input id="editStrokeRadius" type="number" min="0" step="1" value="12"></label></div>
+    
+    <p id="editDrawingHelp" class="panel-help"></p>
+    <p id="editDrawingStatus" class="drawing-status" role="status" aria-live="polite"></p>
+    <button id="closeDrawingEdit" class="panel-done">Done</button>
+  </aside>
+  <aside id="settingsPanel" class="tool-panel" hidden aria-labelledby="settingsHeading">
+    <h2 id="settingsHeading">Board appearance</h2>
+    <p class="panel-help">Current board only · saved with this board.</p><h3>Canvas &amp; grid</h3>
+    <label>Background <button class="color-well" data-color-target="bgColor"><span></span><b id="bgColor">#1d1d1d</b></button></label>
+    <label>Grid style <select id="gridType"><option value="lines">Lines</option><option value="dots" selected>Dots</option><option value="none">None</option></select></label>
+    <label>Grid color <button class="color-well" data-color-target="gridColor"><span></span><b id="gridColor">#ffffff</b></button></label>
+    <label>Grid size <input id="gridSize" type="number" min="2" max="256" value="32"></label>
+    <label for="gridOpacityNumber">Grid opacity <span class="numeric-slider"><input id="gridOpacity" type="range" min="0" max="1" step=".05" value="1" aria-label="Grid opacity"><input id="gridOpacityNumber" type="number" min="0" max="100" step="1" value="100" aria-label="Grid opacity percent"><span>%</span></span></label>
+    <h3>Image thumbnails</h3>
+    <label class="toggle-row">Use thumbnails <input id="thumbnailsEnabled" type="checkbox" checked></label>
+    <label>Thumbnail size <select id="thumbnailSize"><option value="512">512 px</option><option value="1024" selected>1024 px</option><option value="2048">2048 px</option></select></label>
+    <label>Full-res above zoom <select id="thumbnailSwapZoom"><option value="0.5">50%</option><option value="0.75" selected>75%</option><option value="1">100%</option><option value="1.5">150%</option></select></label>
+    <p class="panel-help">Thumbnails keep panning smooth with many large images. Full resolution is used when zoomed in close, and always for Send to AE.</p>
+    <h3>Board interface</h3><label class="toggle-row">Auto-hide toolbar <input id="autoHideToolbar" type="checkbox" checked></label>
+    <label>Accent color <button class="color-well" data-color-target="accentColor"><span></span><b id="accentColor">#4096f3</b></button></label>
+    <label>Panel color <button class="color-well" data-color-target="panelColor"><span></span><b id="panelColor">#252525</b></button></label>
+    <label>Text color <button class="color-well" data-color-target="textColor"><span></span><b id="textColor">#e6e6e6</b></button></label>
+    <p class="panel-help">UI accent, panel and text colors for this board. Canvas and image colors stay unchanged.</p>
+    <button id="accentReset">Reset accent</button>
+    <button id="panelThemeReset">Reset panel theme</button>
+    <button id="bgReset">Reset background</button>
+    <button id="gridReset">Reset grid to defaults</button>
+    <button id="closeSettings" class="panel-done">Done</button>
+  </aside>
+  <aside id="noteSettingsPanel" class="tool-panel note-panel" hidden aria-labelledby="noteSettingsHeading">
+    <h2 id="noteSettingsHeading">Note settings</h2>
+    <label class="object-opacity">Object opacity <span class="numeric-slider"><input data-object-opacity type="range" min="0" max="100" step="1" value="100"><input data-object-opacity-number type="number" min="0" max="100" step="1" value="100"><span>%</span></span></label>
+    <h3>Text</h3>
+    <label for="noteFontSearch">Font</label>
+    <div class="note-font-control">
+      <input id="noteFontSearch" type="text" placeholder="Search installed fonts…" autocomplete="off" spellcheck="false" aria-controls="noteFontList" aria-expanded="false">
+      <div id="noteFontList" class="note-font-list" role="group" aria-label="Font choices" hidden></div>
+    </div>
+    <p id="noteFontStatus" class="panel-help" role="status"></p>
+    <label for="noteFontSize">Size <input id="noteFontSize" type="number" min="1" max="512" step="1" value="18"></label>
+    <label>Style <span class="style-toggles"><button id="noteBold" type="button" aria-pressed="false" title="Bold"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4h4.5a3 3 0 0 1 0 6H7zm0 6h5.2a3.2 3.2 0 0 1 0 6.4H7z"/></svg></button><button id="noteItalic" type="button" aria-pressed="false" title="Italic"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h7M5 16h7M11.5 4 8.5 16"/></svg></button><button id="noteUnderline" type="button" aria-pressed="false" title="Underline"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4v5.5a4 4 0 0 0 8 0V4M5 17h10"/></svg></button></span></label>
+    <label>Text color <button class="color-well" data-color-target="noteTextColor"><span></span><b id="noteTextColor">#eee8da</b></button></label>
+    <label>Text orientation <span id="noteTextOrientation" class="style-toggles" role="group" aria-label="Text orientation"><button type="button" data-orientation="horizontal" aria-pressed="true" title="Horizontal text"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h10M3 14h12"/></svg></button><button type="button" data-orientation="vertical" aria-pressed="false" title="Vertical text"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3v14M10 3v10M14 3v12"/></svg></button></span></label>
+    <h3>Paragraph</h3>
+    <label>Align <span class="style-toggles" role="group" aria-label="Alignment"><button type="button" data-halign="left" aria-pressed="true" title="Align left"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5h12M4 10h8M4 15h10"/></svg></button><button type="button" data-halign="center" aria-pressed="false" title="Center"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5h12M6 10h8M5 15h10"/></svg></button><button type="button" data-halign="right" aria-pressed="false" title="Align right"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5h12M8 10h8M6 15h10"/></svg></button><button type="button" data-halign="justify" aria-pressed="false" title="Justify"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5h12M4 10h12M4 15h12"/></svg></button><button type="button" data-valign="top" aria-pressed="true" title="Align top"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h12M6 8h8M6 12h8"/></svg></button><button type="button" data-valign="middle" aria-pressed="false" title="Align middle"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h12M4 16h12M6 8h8M6 12h8"/></svg></button><button type="button" data-valign="bottom" aria-pressed="false" title="Align bottom"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16h12M6 8h8M6 12h8"/></svg></button></span></label>
+    <label>List <span class="style-toggles"><button id="noteBulletList" type="button" aria-pressed="false" title="Bulleted list"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4.5" cy="6" r="1.4"/><circle cx="4.5" cy="12" r="1.4"/><path d="M8 6h9M8 12h9"/></svg></button><button id="noteNumberList" type="button" aria-pressed="false" title="Numbered list"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M8 6h9M8 12h9"/><text x="3" y="7.6" font-size="4.6">1</text><text x="3" y="13.6" font-size="4.6">2</text></svg></button></span></label>
+    <label>Line height <input id="noteLineHeight" type="number" min="0.8" max="3" step="0.05" value="1.35"></label>
+    <label>Letter spacing <input id="noteLetterSpacing" type="number" min="-5" max="20" step="0.5" value="0"></label>
+    <label>Paragraph spacing <input id="noteParagraphSpacing" type="number" min="0" max="96" step="1" value="0"></label>
+    <h3>Box</h3>
+    <label>Background <button class="color-well" data-color-target="noteBackground"><span></span><b id="noteBackground">#141414</b></button></label>
+    <label>Padding <input id="notePadding" type="number" min="0" max="64" step="1" value="14"></label>
+    <label>Corner radius <input id="noteCornerRadius" type="number" min="0" max="64" step="1" value="0"></label>
+    <p class="panel-help">Applies to the whole note. Changes support Undo.</p>
+    <button id="closeNoteSettings" class="panel-done">Done</button>
+  </aside>
+  <aside id="drawPanel" class="tool-panel drawing-panel" hidden aria-labelledby="drawHeading">
+    <h2 id="drawHeading">New drawing</h2>
+    <label>Tool <select id="drawTool"><option value="pen">Pen</option><option value="line">Line</option></select></label>
+    <section id="drawFillFields" class="drawing-section" hidden>
+      <label class="toggle-row">Fill <input id="drawFillEnabled" type="checkbox"></label>
+      <label>Fill color <button class="color-well" data-color-target="drawFillColor"><span></span><b id="drawFillColor">#4096f3</b></button></label>
+      <label class="toggle-row">Outline <input id="drawOutlineEnabled" type="checkbox" checked></label>
+    </section>
+    <section id="drawOutlineFields" class="drawing-section">
+      <label>Stroke color <button class="color-well" data-color-target="drawColor"><span></span><b id="drawColor">#4096f3</b></button></label>
+      <label for="drawWidthNumber">Width <span class="drawing-width"><input id="drawWidth" type="range" min="1" max="64" step="1" value="10" aria-label="Stroke width"><input id="drawWidthNumber" type="number" min="1" max="64" step="1" value="10" aria-label="Stroke width value"></span></label>
+      <div id="drawStabilizeFields" hidden><label for="drawStabilizeNumber">Smoothing <span class="drawing-width"><input id="drawStabilize" type="range" min="0" max="100" step="1" value="40" aria-label="Pen smoothing"><input id="drawStabilizeNumber" type="number" min="0" max="100" step="1" value="40" aria-label="Pen smoothing value"></span></label><p class="panel-help">Stabilizes the pen against hand jitter. Higher values draw smoother, slower curves. 0 turns it off.</p></div>
+      <label>Pattern <select id="drawStyle"><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option></select></label>
+      <svg id="drawPatternSample" class="drawing-pattern" viewBox="0 0 240 12" aria-hidden="true"><path d="M 4 6 H 236"/></svg>
+      <div id="drawDashFields" hidden><label>Dash length <input id="drawDashLength" type="number" min="0.1" step="0.5" value="4"></label><label>Dash gap <input id="drawDashGap" type="number" min="0.1" step="0.5" value="2"></label><p class="panel-help">Dash values are multiples of stroke width.</p></div>
+    </section>
+    <section id="drawLineFields" class="drawing-section">
+      <label>Arrowheads <select id="drawArrow"><option value="none">None</option><option value="start">Start</option><option value="end">End</option><option value="both">Both</option></select></label>
+      <div id="drawArrowFields" hidden><label>Arrow size <input id="drawArrowSize" type="number" min="0.1" step="0.25" value="1"></label><p class="panel-help">Size is relative to stroke width.</p></div>
+    </section>
+    <div id="drawRadiusFields" hidden><label>Corner radius <input id="drawRadius" type="number" min="0" step="1" value="12"></label></div>
+
+    <p id="drawHelp" class="panel-help"></p>
+    <p id="drawStatus" class="drawing-status" role="status" aria-live="polite"></p>
+    <button id="closeDraw" class="panel-done">Done</button>
+  </aside>
+  <aside id="shapePanel" class="tool-panel drawing-panel" hidden aria-labelledby="shapeHeading">
+    <h2 id="shapeHeading">New shape</h2>
+    <label>Shape <select id="shapeTool"><option value="rect">Rectangle</option><option value="roundrect">Rounded rectangle</option><option value="ellipse">Ellipse</option><option value="triangle">Triangle</option><option value="diamond">Diamond</option><option value="star">Star</option></select></label>
+    <section id="shapeFillFields" class="drawing-section" hidden>
+      <label class="toggle-row">Fill <input id="shapeFillEnabled" type="checkbox"></label>
+      <label>Fill color <button class="color-well" data-color-target="shapeFillColor"><span></span><b id="shapeFillColor">#4096f3</b></button></label>
+      <label class="toggle-row">Outline <input id="shapeOutlineEnabled" type="checkbox" checked></label>
+    </section>
+    <section id="shapeOutlineFields" class="drawing-section">
+      <label>Stroke color <button class="color-well" data-color-target="shapeColor"><span></span><b id="shapeColor">#4096f3</b></button></label>
+      <label for="shapeWidthNumber">Width <span class="drawing-width"><input id="shapeWidth" type="range" min="1" max="64" step="1" value="10" aria-label="Stroke width"><input id="shapeWidthNumber" type="number" min="1" max="64" step="1" value="10" aria-label="Stroke width value"></span></label>
+      <label>Pattern <select id="shapeStyle"><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option></select></label>
+      <svg id="shapePatternSample" class="drawing-pattern" viewBox="0 0 240 12" aria-hidden="true"><path d="M 4 6 H 236"/></svg>
+      <div id="shapeDashFields" hidden><label>Dash length <input id="shapeDashLength" type="number" min="0.1" step="0.5" value="4"></label><label>Dash gap <input id="shapeDashGap" type="number" min="0.1" step="0.5" value="2"></label><p class="panel-help">Dash values are multiples of stroke width.</p></div>
+    </section>
+    <section id="shapeLineFields" class="drawing-section">
+      <label>Arrowheads <select id="shapeArrow"><option value="none">None</option><option value="start">Start</option><option value="end">End</option><option value="both">Both</option></select></label>
+      <div id="shapeArrowFields" hidden><label>Arrow size <input id="shapeArrowSize" type="number" min="0.1" step="0.25" value="1"></label><p class="panel-help">Size is relative to stroke width.</p></div>
+    </section>
+    <div id="shapeRadiusFields" hidden><label>Corner radius <input id="shapeRadius" type="number" min="0" step="1" value="12"></label></div>
+
+    <p id="shapeHelp" class="panel-help"></p>
+    <p id="shapeStatus" class="drawing-status" role="status" aria-live="polite"></p>
+    <button id="closeShape" class="panel-done">Done</button>
+  </aside>
+
+  <div id="startupGate">
+    <div class="startup-content">
+      <svg class="startup-mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 27V7h23M12 13h23v22H12Z"/><path d="m18 27 5-6 6 6"/></svg>
+      <h1>Start a board</h1>
+      <p>Choose its save location first. Pasted images, captures, assets, and autosave will stay beside that board.</p>
+      <div class="startup-actions">
+        <button id="startupNew" class="primary-button">New board…</button>
+        <button id="startupOpen">Open board…</button>
+      </div>
+      <div id="startupRecent" class="startup-recent" hidden>
+        <h3>Recent boards</h3>
+        <div id="startupRecentList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="colorPopover" class="color-popover" role="dialog" aria-label="Color picker" hidden>
+    <div class="color-map">
+      <div id="colorSV" class="color-sv" tabindex="0" role="group" aria-label="Saturation and brightness; use arrow keys">
+        <canvas id="colorPlane" width="256" height="256" aria-hidden="true"></canvas><i id="colorCursor" aria-hidden="true"></i>
+      </div>
+      <div id="colorHue" class="color-ramp" tabindex="0" role="slider" aria-label="Hue" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="360" aria-valuenow="0">
+        <canvas id="colorRamp" width="20" height="256" aria-hidden="true"></canvas><i id="colorHueCursor" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="color-values">
+      <div class="color-samples" aria-label="New and original color"><span id="colorNew" title="New color"></span><span id="colorOld" title="Original color"></span></div>
+      <div class="color-component"><input type="radio" name="colorChannel" value="h" id="channelH" aria-label="Hue plane mode" checked><label for="colorH">H</label><input id="colorH" type="number" min="0" max="360" step="1" aria-label="Hue"><span>°</span></div>
+      <div class="color-component"><input type="radio" name="colorChannel" value="s" id="channelS" aria-label="Saturation plane mode"><label for="colorS">S</label><input id="colorS" type="number" min="0" max="100" step="1" aria-label="Saturation"><span>%</span></div>
+      <div class="color-component"><input type="radio" name="colorChannel" value="v" id="channelV" aria-label="Brightness plane mode"><label for="colorV">B</label><input id="colorV" type="number" min="0" max="100" step="1" aria-label="Brightness"><span>%</span></div>
+      <div class="color-component color-rgb-start"><input type="radio" name="colorChannel" value="r" id="channelR" aria-label="Red plane mode"><label for="colorR">R</label><input id="colorR" type="number" min="0" max="255" step="1" aria-label="Red"><span></span></div>
+      <div class="color-component"><input type="radio" name="colorChannel" value="g" id="channelG" aria-label="Green plane mode"><label for="colorG">G</label><input id="colorG" type="number" min="0" max="255" step="1" aria-label="Green"><span></span></div>
+      <div class="color-component"><input type="radio" name="colorChannel" value="b" id="channelB" aria-label="Blue plane mode"><label for="colorB">B</label><input id="colorB" type="number" min="0" max="255" step="1" aria-label="Blue"><span></span></div>
+      <label class="color-hex" for="colorHex"># <input id="colorHex" value="141414" maxlength="7" spellcheck="false" aria-label="Hex color"></label>
+    </div>
+    <div class="color-actions">
+      <button id="colorDone" class="color-accept">OK</button>
+      <button id="colorCancel">Cancel</button>
+      <button id="colorPick" class="color-eyedropper" title="Pick from screen" aria-label="Pick from screen"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 3 5 5M11 5l4-3 3 3-3 4M12 6l2 2-8 8-3 1 1-3Z"/></svg></button>
+      <label class="color-preview"><input id="colorPreview" type="checkbox" checked>Preview</label>
+    </div>
+  </div>
+<div id="contextMenu" class="context-menu" role="menu" hidden><button data-command="add">Add files…</button><button data-command="paste">Paste clipboard <kbd>Ctrl+V</kbd></button><button data-command="paste-items">Paste items</button><button data-command="copy">Copy items <kbd>Ctrl+C</kbd></button><button data-command="duplicate">Duplicate <kbd>Ctrl+D</kbd></button><span></span><button data-command="edit-note">Edit text</button><button data-command="edit-drawing">Drawing settings…</button><button data-command="copy-image">Copy image to clipboard</button><button data-command="extract-colors">Extract colors…</button><button data-command="relink">Relink image…</button><button data-command="reveal-source">Show in Explorer</button><button data-command="play">Play</button><button data-command="stop">Stop</button><button data-command="open-link">Open in browser</button><span></span><button data-command="arrange">Arrange selection… <kbd>A</kbd></button><span></span><button data-command="group">Group</button><button data-command="ungroup">Ungroup</button><button data-command="enter-group">Edit group contents</button><button data-command="exit-group">Exit group</button><span></span><button data-command="lock">Lock / Unlock</button><button data-command="hide">Hide selection</button><span></span><button data-command="front">Bring to front</button><button data-command="forward">Bring forward</button><button data-command="backward">Send backward</button><button data-command="back">Send to back</button><span></span><button data-command="capture">Capture AE frame</button><button data-command="ae-tools">AE tools…</button><button data-command="send">Send selected to AE <kbd>I</kbd></button><button data-command="replace">Replace in AE <kbd>Shift+I</kbd></button><span></span><button data-command="save">Save board <kbd>Ctrl+S</kbd></button><button data-command="open">Open board…</button><button data-command="recover">Recover autosave</button><button data-command="fit">Fit board</button><button data-command="items">Items / Show hidden…</button><button data-command="grid">Hide grid</button><button data-command="delete" class="danger">Delete selected</button></div>
+
+<button id="saveStatus" hidden title="Board storage status" aria-live="polite"></button>
+<aside id="recoveryBar" hidden aria-label="Board storage">
+ <p id="recoveryMessage" role="status" aria-live="polite"></p>
+ <div class="recovery-actions"><button id="recoveryAccept">Recover</button><button id="recoveryKeep">Keep current</button><button id="recoveryRetry" hidden>Retry</button></div>
+</aside>
+<script src="js/platform-services.js"></script>
+<script src="js/numeric-scrub.js"></script>
+<script src="js/settings-scrub.js"></script>
+<script src="js/file-dialogs.js"></script>
+<script src="js/native-file-dialogs.js"></script>
+<script src="js/screen-sampler.js"></script>
+<script src="js/clipboard-process.js"></script>
+<script src="js/source-location.js"></script>
+<script src="js/board-import.js"></script>
+<script src="js/accent-theme.js"></script>
+<script src="js/editor-commands.js"></script>
+<script src="js/app-preferences.js"></script>
+<script src="js/preferences-ui.js"></script>
+<script src="js/shell-ui.js"></script>
+<script src="js/color-picker.js"></script>
+<script src="js/color-palette.js"></script>
+<script src="js/note-style.js"></script>
+<script src="js/note-lists.js"></script>
+<script src="js/font-catalog.js"></script>
+<script src="js/note-ui.js"></script>
+<script src="js/drawing-path.js"></script>
+  <script src="js/stroke-filter.js"></script>
+<script src="js/drawing-style.js"></script>
+<script src="js/drawing-geometry.js"></script>
+<script src="js/drawing-renderer.js"></script>
+<script src="js/drawing-ui.js"></script>
+<script src="js/layer-operations.js"></script>
+<script src="js/CSInterface.js"></script><script src="js/path-codec.js"></script><script src="js/geometry.js"></script><script src="js/selection-geometry.js"></script><script src="js/grid-pattern.js"></script><script src="js/board-storage.js"></script><script src="js/image-crop.js"></script><script src="js/board-model.js"></script><script src="js/board-assets.js"></script><script src="js/board-export.js"></script><script src="js/board-ui.js"></script><script src="js/files-ui.js"></script><script src="js/crop-ui.js"></script><script src="js/ae-workflow.js"></script><script src="js/ae-ui.js"></script><script src="js/app.js"></script></body></html>

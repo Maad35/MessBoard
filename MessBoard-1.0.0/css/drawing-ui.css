@@ -1,0 +1,18 @@
+/* Shared Draw / Shape inspector; physical placement inherits the CEP shell. */
+.drawing-panel { width: 320px; max-height: calc(100vh - 96px); overflow-y: auto; }
+.drawing-panel .drawing-section { margin: 14px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); }
+.drawing-panel .drawing-section > label:first-child { margin-top: 0; }
+.drawing-panel .drawing-width { display: flex; align-items: center; width: 164px; min-width: 0; }
+.drawing-panel .drawing-width input[type="range"] { flex: 1; min-width: 30px; width: 90px; }
+.drawing-panel .drawing-width input[type="number"] { flex: 0 0 58px; width: 58px; margin-left: 8px; }
+.drawing-panel .drawing-pattern { display: block; width: 100%; height: 12px; margin: 4px 0 8px; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
+.drawing-panel .drawing-erase { width: 100%; margin-top: 16px; color: var(--danger); }
+.drawing-panel .drawing-erase[aria-pressed="true"] { background: var(--accent-surface); border-color: var(--accent-indicator); }
+.drawing-panel .drawing-status { color: var(--ink); line-height: 1.5; margin: 10px 0; }
+.drawing-panel .drawing-status:empty { display: none; }
+.drawing-panel .panel-done { position: sticky; bottom: 0; margin-top: 12px; }
+.drawing-panel .color-well:disabled { opacity: .5; cursor: default; }
+.drawing-panel input, .drawing-panel select { font-variant-numeric: tabular-nums; }
+@media (max-width: 340px) {
+ .drawing-panel .drawing-width { width: 148px; }
+}

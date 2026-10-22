@@ -1,0 +1,13 @@
+/* Storage feedback stays visible when the command rail auto-hides.
+   Like the readout, it must not steal canvas clicks or drags. Details remain
+   available through Board > Files & Export and the status button's keyboard action. */
+#saveStatus { position: fixed; z-index: 8101; right: 8px; bottom: 42px; min-height: 26px; max-width: calc(100% - 16px); padding: 3px 8px; color: var(--muted); background: var(--deep); font-size: 11px; pointer-events: none; }
+#saveStatus[data-error="true"] { color: var(--danger); }
+#recoveryBar { position: fixed; z-index: 8300; left: 8px; bottom: 76px; width: 390px; max-width: calc(100% - 16px); max-height: calc(100% - 88px); overflow-y: auto; padding: 12px; border: 1px solid var(--panel-border); border-radius: var(--radius); background: var(--rail); box-shadow: 0 5px 16px rgba(0,0,0,.3); }
+#recoveryMessage { margin: 0 0 8px; line-height: 1.5; overflow-wrap: break-word; word-wrap: break-word; user-select: text; }
+.recovery-actions { display: flex; flex-wrap: wrap; }
+.recovery-actions > button { margin-top: 4px; }
+.recovery-actions > button + button { margin-left: 6px; }
+#recoveryAccept { color: var(--accent-text); border-color: var(--accent-border); }
+#saveDetails { user-select: text; }
+#saveStatus[hidden], #recoveryBar[hidden], .recovery-actions > button[hidden] { display: none; }
