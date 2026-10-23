@@ -9,7 +9,7 @@ however you like, and send what you need straight into the active comp.
 
 Made by **Maad**. Open source · Not for sale.
 
-Current version: **1.0.0**
+Current version: **1.0.0** (see [CHANGELOG.md](CHANGELOG.md))
 
 ## Features
 
