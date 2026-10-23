@@ -264,6 +264,19 @@ function queueThumbnails(items){
   });
  });
 }
+/* Panel minis for GIFs are generated eagerly (at import and board open), not
+ * left to the lazy panel path: the panel fallback for a GIF is the animated
+ * original itself, so a missing mini is visible as motion in the rows. */
+function queueMiniThumbnails(items){
+ (items||[]).forEach(function(item){
+  if(!item||item.type!=='image'||!item.path)return;
+  if(!/\.gif$/i.test(item.path))return;
+  if(miniThumbExists(item.path))return;
+  generateMiniThumbnail(item.path,function(dest){
+   if(dest)render();
+  });
+ });
+}
 /* Items-panel row preview: prefer the thumbnail file when it exists so the
  * panel does not keep a full-size texture per row. Falls back to the original. */
 /* Mini thumbnails (96px) live beside board thumbnails with a mini- prefix.
@@ -294,7 +307,7 @@ function generateMiniThumbnail(sourcePath,done){
  var img=new Image();
  img.onload=function(){
   try{
-   if(img.naturalWidth<=MINI_THUMB_DIM&&img.naturalHeight<=MINI_THUMB_DIM){finish(null);return;}
+   if(img.naturalWidth<=MINI_THUMB_DIM&&img.naturalHeight<=MINI_THUMB_DIM&&!/\.gif$/i.test(sourcePath||'')){finish(null);return;}
    var scale=Math.min(1,MINI_THUMB_DIM/Math.max(img.naturalWidth,img.naturalHeight));
    var w=Math.max(1,Math.round(img.naturalWidth*scale)),h=Math.max(1,Math.round(img.naturalHeight*scale));
    var canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
@@ -495,7 +508,7 @@ function activateBoard(nextBoard,file,target,state,commit){
  try{
   // Only scene references belong to the board; persistent editor overlays stay attached.
   if(typeof world!=='undefined'){references=world.querySelectorAll('.reference');held=document.createDocumentFragment();for(i=0;i<references.length;i++)if(references[i].parentNode===world)held.appendChild(references[i]);}
-  board=nextBoard;boardPath=file;layout=target;persistence=state;setBoardName();lastThumbMode=null;render();if(typeof queueThumbnails==='function')queueThumbnails(board.items);filesPanel.hidden=true;startupGate.classList.add('hidden');refreshPersistence();if(commit)commit();
+  board=nextBoard;boardPath=file;layout=target;persistence=state;setBoardName();lastThumbMode=null;render();if(typeof queueThumbnails==='function')queueThumbnails(board.items);if(typeof queueMiniThumbnails==='function')queueMiniThumbnails(board.items);filesPanel.hidden=true;startupGate.classList.add('hidden');refreshPersistence();if(commit)commit();
  }
  catch(e){
   board=old.board;boardPath=old.file;layout=old.layout;persistence=old.persistence;
@@ -528,7 +541,7 @@ function naturalSize(file,done){
 // must never disturb the current view.
 function fitsViewport(item){var z=board.camera.zoom;return item.width*z<=viewport.clientWidth&&item.height*z<=viewport.clientHeight;}
 function reframeIfNeeded(item){if(!item||item.type!=='image'||typeof viewport==='undefined'||!viewport||!board||!Geometry||typeof Geometry.fitCamera!=='function')return;if(fitsViewport(item))return;board.setCamera(Geometry.fitCamera([item],{x:0,y:0,width:viewport.clientWidth,height:viewport.clientHeight},32));}
-function addFiles(files,cx,cy){var list=Array.prototype.slice.call(files||[]).filter(function(f){return /\.(png|jpe?g|gif|webp|bmp|tiff?|svg|heic|avif|mp4|webm|ogg)$/i.test(f.path||f.name||'');});if(!list.length){toast('No supported image or video files found.');return;}var added=[],pending=list.length;function maybeArrange(){if(--pending>0)return;if(added.length>=2){board.setSelection(added.map(function(it){return it.id;}));var gap=layoutGapValue();if(board.autoArrangeSelected({gap:gap})){render();toast(added.length+' files arranged');}}}list.forEach(function(f,index){var p=f.path||f.name;if(/\.(mp4|webm|ogg)$/i.test(p)){addVideoFile(f,cx+index*28,cy+index*28,function(vitem){if(vitem)added.push(vitem);maybeArrange();});return;}naturalSize(p,function(size){var item=board.addImage(p,cx+index*28,cy+index*28,size);if(item)added.push(item);queueThumbnails([item]);render();reframeIfNeeded(item);maybeArrange();});});}
+function addFiles(files,cx,cy){var list=Array.prototype.slice.call(files||[]).filter(function(f){return /\.(png|jpe?g|gif|webp|bmp|tiff?|svg|heic|avif|mp4|webm|ogg)$/i.test(f.path||f.name||'');});if(!list.length){toast('No supported image or video files found.');return;}var added=[],pending=list.length;function maybeArrange(){if(--pending>0)return;if(added.length>=2){board.setSelection(added.map(function(it){return it.id;}));var gap=layoutGapValue();if(board.autoArrangeSelected({gap:gap})){render();toast(added.length+' files arranged');}}}list.forEach(function(f,index){var p=f.path||f.name;if(/\.(mp4|webm|ogg)$/i.test(p)){addVideoFile(f,cx+index*28,cy+index*28,function(vitem){if(vitem)added.push(vitem);maybeArrange();});return;}naturalSize(p,function(size){var item=board.addImage(p,cx+index*28,cy+index*28,size);if(item)added.push(item);queueThumbnails([item]);if(typeof queueMiniThumbnails==='function')queueMiniThumbnails([item]);render();reframeIfNeeded(item);maybeArrange();});});}
 /* Local video: poster first (real first frame), playback streams from the
  * original path. Nothing is copied — boards stay portable, videos relink. */
 function addVideoFile(file,cx,cy,done){var p=file.path||file.name;if(!requireBoard()){if(done)done(null);return;}pendingImports++;captureVideoPoster(p,function(poster,missing,size){pendingImports--;var w=640,h=360;if(size&&size.width>0&&size.height>0){var cap=4096,vscale=Math.min(1,cap/Math.max(size.width,size.height));w=Math.max(80,Math.round(size.width*vscale));h=Math.max(60,Math.round(size.height*vscale));}var item=board.addVideo(cx,cy,{path:p,poster:poster,name:basename(p),width:w,height:h});if(missing)toast('Video added · MP4 (H.264) or WebM required for playback.');render();reframeIfNeeded(item);if(done)done(item);});}
