@@ -273,7 +273,7 @@ function queueMiniThumbnails(items){
   if(!/\.gif$/i.test(item.path))return;
   if(miniThumbExists(item.path))return;
   generateMiniThumbnail(item.path,function(dest){
-   if(dest)render();
+   if(dest)scheduleMiniUiRefresh();
   });
  });
 }
@@ -325,12 +325,23 @@ function generateMiniThumbnail(sourcePath,done){
  img.onerror=function(){finish(null);};
  try{img.src=PathCodec.toFileUrl(srcPath);}catch(e){finish(null);}
 }
+/* Mini completions never render the app: a burst of finished minis used to
+ * fire a full render each, which read as a flicker in the Items panel. They
+ * coalesce into one targeted thumbnail repaint instead. */
+var miniUiTimer=null;
+function scheduleMiniUiRefresh(){
+ if(miniUiTimer)return;
+ miniUiTimer=setTimeout(function(){
+  miniUiTimer=null;
+  if(typeof boardUI!=='undefined'&&boardUI&&typeof boardUI.refreshThumbnails==='function')boardUI.refreshThumbnails();
+ },250);
+}
 function panelImageURL(item){
  if(!item||item.type!=='image'||item.missing)return '';
  try{
   if(board&&board.settings&&board.settings.thumbnailsEnabled){
    if(miniThumbExists(item.path))return PathCodec.toFileUrl(miniThumbPathFor(item.path));
-   generateMiniThumbnail(item.path,function(dest){if(dest)render();});
+   generateMiniThumbnail(item.path,function(dest){if(dest)scheduleMiniUiRefresh();});
    if(thumbExists(item.path))return PathCodec.toFileUrl(thumbPathFor(item.path));
   }
   return PathCodec.toFileUrl(item.path);
@@ -1207,7 +1218,7 @@ function saveBoardAs(file){
   result=assets.saveAs(snapshot,boardPath,target,targetOccupied?{overwrite:true}:undefined);nextBoard=BoardModel.fromJSON(result.data);
   // History contains paths in the original tree: a copy starts fresh.
   nextBoard.setSelection(board.selection.slice());
-  var nextLayout=BoardStorage.layoutFor(result.boardPath),nextPersistence=persistenceFor(nextBoard,result.boardPath,nextLayout);nextPersistence.lastSaved=new Date();activateBoard(nextBoard,result.boardPath,nextLayout,nextPersistence);
+  var nextLayout=BoardStorage.layoutFor(result.boardPath),nextPersistence=persistenceFor(nextBoard,result.boardPath,nextLayout);nextPersistence.lastSaved=new Date();activateBoard(nextBoard,result.boardPath,nextLayout,nextPersistence);if(typeof addRecentBoard==='function')addRecentBoard(result.boardPath);
  }catch(e){toast('Save As failed · '+e.message);return false;}
  // The copy and identity are committed. Chrome focus/panel errors are not save failures.
  try{if(shellUI){shellUI.closePanels();shellUI.closeMenus(false);}viewport.focus();}
@@ -1255,7 +1266,7 @@ function createBoard(file){if(fileOperationBusy())return;try{
  if(!prepareBoardSwitch())return;
  var protectedImages=sourceImagePaths(board),nextPersistence=persistenceFor(nextBoard,nextLayout.boardPath,nextLayout);nextPersistence.lastSaved=new Date();
  // Publish only after activation succeeds; a failed render must not replace a primary.
- activateBoard(nextBoard,nextLayout.boardPath,nextLayout,nextPersistence,function(){publishNewBoard(nextLayout,nextBoard,protectedImages);});toast('Board created · '+basename(boardPath));
+ activateBoard(nextBoard,nextLayout.boardPath,nextLayout,nextPersistence,function(){publishNewBoard(nextLayout,nextBoard,protectedImages);});if(typeof addRecentBoard==='function')addRecentBoard(boardPath);toast('Board created · '+basename(boardPath));
  }catch(e){toast('Create failed · '+e.message);}}
 var RECENT_KEY='messboard.recent-boards.v1',MAX_RECENT=3;
 function getRecentBoards(){try{var list=JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');return Array.isArray(list)?list.filter(function(p){return typeof p==='string';}):[];}catch(e){return [];}}
