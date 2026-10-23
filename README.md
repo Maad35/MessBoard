@@ -9,7 +9,7 @@ however you like, and send what you need straight into the active comp.
 
 Made by **Maad**. Open source · Not for sale.
 
-Current version: **1.0.0** (see [CHANGELOG.md](CHANGELOG.md))
+Current version: **1.0.1** (see [CHANGELOG.md](CHANGELOG.md))
 
 ## Features
 
@@ -38,7 +38,7 @@ There are two ways to install MessBoard.
 
 **Option A: ZXP package (easiest)**
 
-1. Download `MessBoard-1.0.0.zxp` from this repository.
+1. Download `MessBoard-1.0.1.zxp` from this repository.
 2. Install it with a free ZXP installer tool, for example
    [Anastasiy's Extension Manager](https://install.anastasiy.com/)
    or the ZXP Installer from aescripts + aeplugins. Select the
@@ -52,10 +52,10 @@ Option B, then install the ZXP again.
 
 **Option B: manual folder**
 
-1. Take the `MessBoard-1.0.0` folder from this repository (use the
+1. Take the `MessBoard-1.0.1` folder from this repository (use the
    green **Code** button above and choose **Download ZIP** if you
    want the whole repository as one file).
-2. Copy the `MessBoard-1.0.0` folder into the CEP extensions
+2. Copy the `MessBoard-1.0.1` folder into the CEP extensions
    folder (create it if it does not exist):
    - Windows: `%APPDATA%\Adobe\CEP\extensions\`
    - macOS: `~/Library/Application Support/Adobe/CEP/extensions/`

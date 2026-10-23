@@ -4,6 +4,15 @@ All notable changes to MessBoard are documented here. Versions follow
 [Semantic Versioning](https://semver.org/): patch (1.0.x) for fixes,
 minor (1.x.0) for new features, major (x.0.0) for breaking changes.
 
+## [1.0.1] - 2026-10-23
+
+### Changed
+
+- Menus in the top menu bar now open by click only. Previously, once one
+  menu was open, hovering a sibling menu opened it automatically. The
+  compact "Menu" list at narrow panel widths behaves the same way: its
+  menu rows open by click only, never on hover.
+
 ## [1.0.0] - 2026-10-23
 
 First versioned release.

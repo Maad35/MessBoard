@@ -175,8 +175,12 @@
   });
   function hover(e){
    var button=e.target.closest&&e.target.closest('button');
-   if(button&&button.dataset.menu){if(activeMenu&&activeMenu!==menu&&activeMenu.id!==button.dataset.menu)openMenu(button,false);return;}
+   /* Menu-bar roots are click-only: hovering a sibling root never switches
+    * menus, and inside the compact All-menus list the menu rows also open
+    * by click only (their click handler already calls openSubmenu). */
+   if(button&&button.dataset.menu)return;
    if(containsMenu(e.target)){root.clearTimeout(closeTimer);closeTimer=null;}
+   if(button&&button.dataset.submenu&&path.length&&path[0].menu.id==='mainMenu')return;
    if(!button||!containsMenu(button)||!activeMenu||(e.relatedTarget&&button.contains(e.relatedTarget)))return;
    cancelTimers();var depth=depthOf(button.closest('.command-menu'));if(depth<0)return;
    var child=path[depth+1];if(child&&child.button===button)return;

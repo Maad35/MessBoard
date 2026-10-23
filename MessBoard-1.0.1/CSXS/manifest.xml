@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="7.0" ExtensionBundleId="com.maad.messboard" ExtensionBundleVersion="1.0.0" ExtensionBundleName="MessBoard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ExtensionList><Extension Id="com.maad.messboard.panel" Version="1.0.0"/></ExtensionList>
+<ExtensionManifest Version="7.0" ExtensionBundleId="com.maad.messboard" ExtensionBundleVersion="1.0.1" ExtensionBundleName="MessBoard" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ExtensionList><Extension Id="com.maad.messboard.panel" Version="1.0.1"/></ExtensionList>
   <ExecutionEnvironment>
     <HostList><Host Name="AEFT" Version="[17.0,99.9]"/></HostList>
     <LocaleList><Locale Code="All"/></LocaleList>
