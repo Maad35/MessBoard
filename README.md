@@ -76,6 +76,13 @@ The full guide is included in this repository as
 shortcuts are also listed inside the app under
 **MessBoard > Keyboard shortcuts**.
 
+## Tips
+
+Place your reference images in the world area you see at 50–100%
+zoom, so several of them are visible around that area. If a source
+image is large, just shrink it, it stays sharp. This keeps the panel
+light, and resizing images huge can occasionally glitch the UI.
+
 ## Questions and bug reports
 
 Open an issue in this repository. Please include your After Effects
